@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TestDataGen</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="container">
+  <h1>TestDataGen</h1>
+  <p>Generate QA-friendly test data instantly</p>
+
+  <div class="controls">
+    <select id="type">
+      <option value="email">Email</option>
+      <option value="phone">Phone</option>
+      <option value="json">JSON Payload</option>
+    </select>
+
+    <input type="number" id="count" value="1" min="1" max="50"/>
+
+    <!-- Country -->
+    <select id="country">
+      <option value="+91">India (+91)</option>
+      <option value="+1">USA (+1)</option>
+      <option value="+44">UK (+44)</option>
+    </select>
+
+    <!-- Schema -->
+    <select id="schema">
+      <option value="basic">Basic User</option>
+      <option value="ecommerce">E-commerce</option>
+      <option value="auth">Auth Payload</option>
+    </select>
+
+    <button onclick="generate()">Generate</button>
+  </div>
+
+  <pre id="output"></pre>
+  <button onclick="copyOutput()">Copy</button>
+
+  <hr/>
+
+  <div class="feedback">
+  <h3>Feedback</h3>
+
+  <p class="note">
+    You can submit feedback anonymously. If you'd like a response, provide your email.
+  </p>
+
+  <label>
+    <input type="checkbox" id="anonymous" checked onchange="toggleIdentity()" />
+    Submit anonymously
+  </label>
+
+  <div id="identityFields" style="display:none;">
+    <input id="name" placeholder="Your Name (optional)" />
+    <input id="email" placeholder="Your Email (optional)" />
+  </div>
+
+  <textarea id="message" placeholder="Your feedback"></textarea>
+  <button onclick="submitFeedback()">Send Feedback</button>
+</div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
