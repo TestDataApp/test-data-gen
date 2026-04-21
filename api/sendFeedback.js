@@ -18,6 +18,8 @@ export default async function handler(req, res) {
       subject: "New Feedback",
       html: `
         <h3>Feedback</h3>
+        <p><b>Name:</b> ${name}</p>
+        <p><b>Email:</b> ${email}</p>
         <p><b>Message:</b> ${message}</p>
       `
     })
