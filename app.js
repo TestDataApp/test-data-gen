@@ -13,31 +13,155 @@ function generatePhone() {
   return code + num;
 }
 
+// function generateJSON() {
+//   const schema = document.getElementById("schema").value;
+
+//   if (schema === "basic") {
+//     return {
+//       name: "User_" + randomString(),
+//       email: generateEmail(),
+//       phone: generatePhone()
+//     };
+//   }
+
+//   if (schema === "ecommerce") {
+//     return {
+//       userId: randomString(),
+//       amount: Math.floor(Math.random() * 10000),
+//       items: [{ name: "Item1", price: 100 }]
+//     };
+//   }
+
+//   if (schema === "auth") {
+//     return {
+//       username: "user_" + randomString(),
+//       password: randomString() + "123"
+//     };
+//   }
+// }
+
 function generateJSON() {
   const schema = document.getElementById("schema").value;
+  const mode = document.getElementById("mode")?.value || "valid"; // optional dropdown
+
+  // ---------- Helpers ----------
+  const rand = (len = 6) => Math.random().toString(36).substring(2, 2 + len);
+
+  const randomNumber = (max = 10000) => Math.floor(Math.random() * max);
+
+  const randomPhone = () => "+91" + Math.floor(6000000000 + Math.random() * 3999999999);
+
+  const randomEmail = () => `${rand()}@test.com`;
+
+  const pick = (valid, invalid, edge) => {
+    if (mode === "invalid") return invalid;
+    if (mode === "edge") return edge;
+    return valid;
+  };
+
+  // ---------- Schemas ----------
 
   if (schema === "basic") {
     return {
-      name: "User_" + randomString(),
-      email: generateEmail(),
-      phone: generatePhone()
+      name: pick("User_" + rand(), "", "A"),
+      email: pick(randomEmail(), "invalid-email", "a@a.com"),
+      phone: pick(randomPhone(), "123", "+919999999999999999")
     };
   }
 
   if (schema === "ecommerce") {
     return {
-      userId: randomString(),
-      amount: Math.floor(Math.random() * 10000),
-      items: [{ name: "Item1", price: 100 }]
+      userId: pick(rand(), null, ""),
+      amount: pick(randomNumber(), -500, 0),
+      items: [
+        {
+          name: "Item_" + rand(3),
+          price: pick(100, -10, 0)
+        }
+      ]
     };
   }
 
   if (schema === "auth") {
     return {
-      username: "user_" + randomString(),
-      password: randomString() + "123"
+      username: pick("user_" + rand(), "' OR 1=1 --", "u"),
+      password: pick(rand() + "123", "<script>alert(1)</script>", "123")
     };
   }
+
+  // ---------- NEW ADDITIONS ----------
+
+  if (schema === "address") {
+    return {
+      name: "User_" + rand(),
+      address: {
+        street: pick("123 Main St", "", "A"),
+        city: "Chennai",
+        state: "Tamil Nadu",
+        pincode: pick("600001", "abc", "9999999999"),
+        country: "India"
+      }
+    };
+  }
+
+  if (schema === "order") {
+    return {
+      orderId: "ORD_" + rand(),
+      userId: rand(),
+      items: [
+        { id: "item1", price: 100, qty: 2 },
+        { id: "item2", price: 250, qty: 1 }
+      ],
+      totalAmount: pick(450, -100, 0),
+      paymentMethod: "UPI",
+      status: pick("PENDING", "UNKNOWN_STATUS", "")
+    };
+  }
+
+  if (schema === "pagination") {
+    return {
+      page: pick(1, -1, 999999),
+      limit: pick(10, 0, 1000),
+      sortBy: "createdAt",
+      order: pick("desc", "invalid", "")
+    };
+  }
+
+  if (schema === "search") {
+    return {
+      query: pick("laptop", "", "a"),
+      filters: {
+        priceMin: pick(1000, -100, 0),
+        priceMax: pick(50000, -1, 999999999),
+        brand: ["Dell", "HP"]
+      }
+    };
+  }
+
+  if (schema === "file") {
+    return {
+      fileName: pick("data.xlsx", "data.exe", ""),
+      fileSize: pick(1024000, 9999999999, 0),
+      fileType: pick(
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/unknown",
+        ""
+      )
+    };
+  }
+
+  if (schema === "headers") {
+    return {
+      Authorization: pick(
+        "Bearer " + rand(20),
+        "",
+        "Bearer"
+      ),
+      "Content-Type": pick("application/json", "text/plain", "")
+    };
+  }
+
+  return { message: "Unknown schema selected" };
 }
 
 function generate() {
