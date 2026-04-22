@@ -81,11 +81,16 @@ async function submitFeedback(){
   });
 
   if(res.ok) {
-    alert("Feedback sent!");
-    document.getElementById("message").value = "";
+    const messageBox = document.getElementById("message");
+    messageBox.value = "";
+    messageBox.placeholder = "✅ Feedback sent. Thanks!";
   } else {
     alert("Error sending feedback");
   }
+
+  setTimeout(() => {
+    messageBox.placeholder = "Your feedback";
+  }, 3000);
 }
 
 function toggleIdentity() {
