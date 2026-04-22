@@ -45,30 +45,30 @@
   <hr/>
 
   <p style="font-size:12px; margin-top:20px;">
-    Built by Mani Raju • 
-    <a href="https://github.com/YOUR_REPO" target="_blank">GitHub</a>
+    Built by Mani Raju •
   </p>
 
   <div class="feedback">
-  <h3>Feedback</h3>
+    <h3>Feedback</h3>
 
-  <p class="note">
-    You can submit feedback anonymously. If you'd like a response, provide your email.
-  </p>
+    <p class="note">
+      You can submit feedback anonymously. If you'd like a response, provide your email.
+    </p>
 
-  <label>
-    <input type="checkbox" id="anonymous" checked onchange="toggleIdentity()" />
-    Submit anonymously
-  </label>
+    <label class="checkbox">
+      <input type="checkbox" id="anonymous" checked onchange="toggleIdentity()" />
+      Submit anonymously
+    </label>
 
-  <div id="identityFields" style="display:none;">
-    <input id="name" placeholder="Your Name (optional)" />
-    <input id="email" placeholder="Your Email (optional)" />
+    <div id="identityFields" class="row" style="display:none;">
+      <input id="name" placeholder="Your Name (optional)" />
+      <input id="email" placeholder="Your Email (optional)" />
+    </div>
+
+    <textarea id="message" placeholder="Your feedback"></textarea>
+
+    <button class="primary-btn" onclick="submitFeedback()">Send Feedback</button>
   </div>
-
-  <textarea id="message" placeholder="Your feedback"></textarea>
-  <button onclick="submitFeedback()">Send Feedback</button>
-</div>
 
 </div>
 
