@@ -56,13 +56,30 @@ function generate() {
     type === "json" ? JSON.stringify(result, null, 2) : result.join("\n");
 }
 
-function copyOutput() {
+
+function copyOutput(btn) {
   const text = document.getElementById("output").textContent;
   navigator.clipboard.writeText(text);
 
-  // Optional UX improvement
-  alert("Copied!");
+  // Store the original text
+  const originalText = btn.textContent;
+
+  // Change the button text
+  btn.textContent = "Copied!";
+  btn.disabled = true; // Optional: prevent double-clicks
+
+  // Revert back after 1.5 seconds
+  setTimeout(() => {
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }, 1500);
 }
+
+function clearOutput() {
+  // Target the pre tag and empty its content
+  document.getElementById("output").textContent = "";
+}
+
 
 async function submitFeedback() {
   const isAnon = document.getElementById("anonymous").checked;

@@ -9,7 +9,7 @@
 <body>
 
 <div class="container">
-  <h1>TestDataGen</h1>
+  <h1>⚙️ MockData Builder</h1>
   <p>Generate QA-friendly test data instantly</p>
 
   <div class="controls">
@@ -33,18 +33,16 @@
       <option value="auth">Auth Payload</option>
     </select>
 
-    <button onclick="generate()">Generate</button>
+    <button class="secondary-btn" onclick="generate()">⚡Generate</button>
   </div>
 
   <h4>Generated Output</h4>
   <pre id="output"></pre>
-  <button onclick="copyOutput()">Copy</button>
+  <button onclick="copyOutput(this)">📋 Copy</button>
+  <button onclick="clearOutput()">🗑 Clear</button>
 
   <hr/>
 
-  <p class="footer">
-    Built by Mani Raju
-  </p>
 
   <!-- Collapsible Feedback -->
   <details class="feedback">
