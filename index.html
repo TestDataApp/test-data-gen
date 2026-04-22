@@ -21,14 +21,12 @@
 
     <input type="number" id="count" value="1" min="1" max="50"/>
 
-    <!-- Country -->
     <select id="country">
       <option value="+91">India (+91)</option>
       <option value="+1">USA (+1)</option>
       <option value="+44">UK (+44)</option>
     </select>
 
-    <!-- Schema -->
     <select id="schema">
       <option value="basic">Basic User</option>
       <option value="ecommerce">E-commerce</option>
@@ -44,12 +42,14 @@
 
   <hr/>
 
-  <p style="font-size:12px; margin-top:20px;">
-    Built by Mani Raju •
+  <p class="footer">
+    Built by Mani Raju • 
+    <a href="https://github.com/YOUR_REPO" target="_blank">GitHub</a>
   </p>
 
-  <div class="feedback">
-    <h3>Feedback</h3>
+  <!-- Collapsible Feedback -->
+  <details class="feedback">
+    <summary><b>Feedback</b> (optional)</summary>
 
     <p class="note">
       You can submit feedback anonymously. If you'd like a response, provide your email.
@@ -68,8 +68,7 @@
     <textarea id="message" placeholder="Your feedback"></textarea>
 
     <button class="primary-btn" onclick="submitFeedback()">Send Feedback</button>
-  </div>
-  
+  </details>
 
 </div>
 
