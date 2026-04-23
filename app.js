@@ -13,33 +13,6 @@ function generatePhone() {
   return code + num;
 }
 
-// function generateJSON() {
-//   const schema = document.getElementById("schema").value;
-
-//   if (schema === "basic") {
-//     return {
-//       name: "User_" + randomString(),
-//       email: generateEmail(),
-//       phone: generatePhone()
-//     };
-//   }
-
-//   if (schema === "ecommerce") {
-//     return {
-//       userId: randomString(),
-//       amount: Math.floor(Math.random() * 10000),
-//       items: [{ name: "Item1", price: 100 }]
-//     };
-//   }
-
-//   if (schema === "auth") {
-//     return {
-//       username: "user_" + randomString(),
-//       password: randomString() + "123"
-//     };
-//   }
-// }
-
 function generateJSON() {
   const schema = document.getElementById("schema").value;
   const mode = document.getElementById("mode")?.value || "valid"; // optional dropdown
@@ -167,6 +140,15 @@ function generateJSON() {
 function generate() {
   const type = document.getElementById("type").value;
   const count = document.getElementById("count").value;
+
+  // 🔥 Track event (place it here — BEFORE generation logic)
+  if (typeof gtag === "function") {
+    gtag('event', 'generate_click', {
+      event_category: 'engagement',
+      event_label: type,   // email / phone / json
+      value: parseInt(count) || 1
+    });
+  }
 
   let result = [];
 
