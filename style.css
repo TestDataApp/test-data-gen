@@ -88,7 +88,8 @@ pre {
   padding: 10px;
   margin-top: 15px;
   background: #fafafa;
-  max-width: 750px;
+  max-width: 850px;
+  letter-spacing: 0.5px;
 }
 
 /* Collapsible summary */
@@ -131,7 +132,7 @@ pre {
 
 /* Textarea */
 .feedback textarea {
-  width: 90%;
+  width: 95%;
   height: 60px;
   resize: none;
 }
