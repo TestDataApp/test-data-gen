@@ -11,6 +11,7 @@ h1 {
 p {
   color: #6b7280;
   font-size: 14px;
+  letter-spacing: 0.5px;
 }
 
 .container {
@@ -24,17 +25,24 @@ p {
 
 .controls {
   display: grid;
-  grid-template-columns: repeat(4, 1fr) auto;
-  gap: 12px;
-  align-items: center;
-  margin-top: 10px;
+  grid-template-columns: repeat(4, minmax(140px, 1fr)) auto;
+  gap: 16px;
+  align-items: end;
+  margin-top: 15px;
 }
 
-select, input {
-  padding: 8px;
-  margin: 5px;
+.controls select, 
+.controls input {
+  width: 100%;
+  padding: 10px 12px;
+  margin: 0;
+  box-sizing: border-box;
+  height: 42px; 
+  font-weight: 550;
+  color: #111827;
   background: #f9fafb;
   transition: all 0.2s ease;
+  letter-spacing: 0.5px;
 }
 
 button {
@@ -63,7 +71,7 @@ pre {
   min-height: 150px;
   border-radius: 8px;
   overflow-x: auto;
-  font-size: 13px;
+  font-size: 20px;
   line-height: 1.5;
 }
 
@@ -105,6 +113,9 @@ pre {
   align-items: center;
   gap: 8px;
   margin-bottom: 10px;
+  width: auto;
+  height: auto;
+  margin: 0;
 }
 
 /* Name + Email row */
@@ -115,6 +126,7 @@ pre {
 
 .row input {
   flex: 1;
+  width: auto;
 }
 
 /* Textarea */
@@ -140,7 +152,8 @@ pre {
 }
 
 .secondary-btn {
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  /* background: linear-gradient(135deg, #6366f1, #4f46e5); */
+  background: linear-gradient(135deg,#ee5555, #e30110 );
   color: white;
   border: none;
   padding: 10px 18px;
@@ -148,6 +161,13 @@ pre {
   font-weight: bold;
   cursor: pointer;
   font-size: 15px;
+  height: 42px;
+  align-self: end;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
 }
 
 .secondary-btn:hover {
@@ -156,10 +176,11 @@ pre {
 
 label {
   display: block;
-  font-size: 12px;
+  font-size: 14px;
   color: #6b7280;
   margin-left: 5px;
   margin-bottom: 3px;
+  letter-spacing: 0.5px;
 }
 
 input {
@@ -214,13 +235,13 @@ select:focus {
 
 .action-btn {
   padding: 10px 18px;
-  font-size: 14px;
+  font-size: 18px;
   border-radius: 8px;
   border: none;
   background: #e5e7eb;
   color: #111827;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
   transition: all 0.2s ease;
 }
 
@@ -230,11 +251,16 @@ select:focus {
 
 .output-actions {
   display: flex;
-  gap: 10px;
+  gap: 15px;
   margin-top: 10px;
 }
 
+.checkbox input {
+  width: auto;
+  height: auto;
+  margin: 0;
+}
 
-
-
-
+value {
+  font-weight:1000;
+}
