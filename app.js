@@ -5,11 +5,17 @@ document.addEventListener("DOMContentLoaded", () => {
 function handleTypeChange() {
   const typeSelection = document.getElementById("type").value;
   const lengthInput = document.getElementById("strLength");
+  const lengthLabel = document.getElementById("lengthLabel");
   
   if (typeSelection.startsWith("email:")) {
     lengthInput.disabled = false;
+    if (lengthLabel) lengthLabel.textContent = "Email Prefix (Length)";
+  } else if (typeSelection.startsWith("json:")) {
+    lengthInput.disabled = false;
+    if (lengthLabel) lengthLabel.textContent = "JSON String Length";
   } else {
     lengthInput.disabled = true;
+    if (lengthLabel) lengthLabel.textContent = "Length";
     document.getElementById("lengthError").textContent = "";
   }
 }
