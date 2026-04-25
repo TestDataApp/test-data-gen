@@ -24,67 +24,57 @@
 
   <div class="controls">
     <div>
-      <label>Type</label>
-      <select id="type">
-        <option value="email">Email</option>
-        <option value="phone">Phone</option>
-        <option value="json">JSON Payload</option>
+      <label>Data Type</label>
+      <select id="type" onchange="handleTypeChange()" onkeydown="if(event.key === 'Enter') generate()">
+        <optgroup label="Email">
+          <option value="email:random">Random Domain</option>
+          <option value="email:gmail.com">gmail.com</option>
+          <option value="email:multi-part-domain.co.uk">multi-part-domain.co.uk</option>
+          <option value="email:test.com">test.com</option>
+          <option value="email:verylongdomainnameexample.com">Very Long Domain</option>
+          <option value="email:outlook.com">outlook.com</option>
+          <option value="email:enterprise.org">enterprise.org</option>
+          <option value="email:startup.io">startup.io</option>
+        </optgroup>
+        <optgroup label="Phone">
+          <option value="phone:+91">India (+91)</option>
+          <option value="phone:+1">USA (+1)</option>
+          <option value="phone:+44">UK (+44)</option>
+        </optgroup>
+        <optgroup label="JSON - Basic">
+          <option value="json:basic">Basic User</option>
+          <option value="json:auth">Auth Payload</option>
+        </optgroup>
+        <optgroup label="JSON - E-commerce">
+          <option value="json:ecommerce">Simple Cart</option>
+          <option value="json:order">Order / Checkout</option>
+        </optgroup>
+        <optgroup label="JSON - User Data">
+          <option value="json:address">User with Address</option>
+        </optgroup>
+        <optgroup label="JSON - API Testing">
+          <option value="json:pagination">Pagination</option>
+          <option value="json:search">Search / Filter</option>
+        </optgroup>
+        <optgroup label="JSON - File Testing">
+          <option value="json:file">File Metadata</option>
+        </optgroup>
+        <optgroup label="JSON - Headers">
+          <option value="json:headers">Auth Headers</option>
+        </optgroup>
       </select>
     </div>
 
-    <div>
+    <div style="position: relative;">
       <label>Count</label>
-      <input type="number" id="count" value="1" min="1" max="100"/>
+      <input type="number" id="count" value="1" min="1" max="100" ondblclick="this.select()" onkeydown="if(event.key === 'Enter') generate()" />
+      <span id="countError" class="error-msg"></span>
     </div>
 
-    <div>
-      <label>Country</label>
-      <select id="country">
-        <option value="+91">India (+91)</option>
-        <option value="+1">USA (+1)</option>
-        <option value="+44">UK (+44)</option>
-      </select>
-    </div>
-
-    <div>
-    <label>Schema (JSON)</label>
-
-    <select id="schema">
-    
-    <!-- Basic -->
-    <optgroup label="Basic">
-      <option value="basic">Basic User</option>
-      <option value="auth">Auth Payload</option>
-    </optgroup>
-
-    <!-- E-commerce -->
-    <optgroup label="E-commerce">
-      <option value="ecommerce">Simple Cart</option>
-      <option value="order">Order / Checkout</option>
-    </optgroup>
-
-    <!-- User & Address -->
-    <optgroup label="User Data">
-      <option value="address">User with Address</option>
-    </optgroup>
-
-    <!-- API Testing -->
-    <optgroup label="API Testing">
-      <option value="pagination">Pagination</option>
-      <option value="search">Search / Filter</option>
-    </optgroup>
-
-    <!-- File & Upload -->
-    <optgroup label="File Testing">
-      <option value="file">File Metadata</option>
-    </optgroup>
-
-    <!-- Headers -->
-    <optgroup label="Headers">
-      <option value="headers">Auth Headers</option>
-    </optgroup>
-
-    </select>
+    <div style="position: relative;">
+      <label>Email Prefix (Length)</label>
+      <input type="number" id="strLength" value="8" min="3" max="100" ondblclick="this.select()" onkeydown="if(event.key === 'Enter') generate()" />
+      <span id="lengthError" class="error-msg"></span>
     </div>
 
     <button class="secondary-btn" onclick="generate()">✨ Generate</button>

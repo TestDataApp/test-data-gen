@@ -1,24 +1,51 @@
-function randomString() {
-  return Math.random().toString(36).substring(2, 8);
+document.addEventListener("DOMContentLoaded", () => {
+  handleTypeChange();
+});
+
+function handleTypeChange() {
+  const typeSelection = document.getElementById("type").value;
+  const lengthInput = document.getElementById("strLength");
+  
+  if (typeSelection.startsWith("email:")) {
+    lengthInput.disabled = false;
+  } else {
+    lengthInput.disabled = true;
+    document.getElementById("lengthError").textContent = "";
+  }
 }
 
-function generateEmail() {
-  const domains = ["gmail.com", "yahoo.com", "test.com"];
-  return `${randomString()}@${domains[Math.floor(Math.random() * domains.length)]}`;
+function randomString(length = 8) {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
 }
 
-function generatePhone() {
-  const code = document.getElementById("country").value;
+function generateEmail(domainSelection, userLen) {
+  let domain = domainSelection;
+  if (domain === "random") {
+    const domains = [
+      "gmail.com", "yahoo.com", "test.com", "hotmail.com", 
+      "outlook.com", "enterprise.org", "startup.io", 
+      "verylongdomainnameexample.com", "multi-part-domain.co.uk"
+    ];
+    domain = domains[Math.floor(Math.random() * domains.length)];
+  }
+  return `${randomString(userLen)}@${domain}`;
+}
+
+function generatePhone(countryCode) {
   const num = Math.floor(9000000000 + Math.random() * 1000000000);
-  return code + num;
+  return countryCode + num;
 }
 
-function generateJSON() {
-  const schema = document.getElementById("schema").value;
+function generateJSON(schema, userLen) {
   const mode = document.getElementById("mode")?.value || "valid"; // optional dropdown
 
   // ---------- Helpers ----------
-  const rand = (len = 6) => Math.random().toString(36).substring(2, 2 + len);
+  const rand = (len) => randomString(len !== undefined ? len : userLen);
 
   const randomNumber = (max = 10000) => Math.floor(Math.random() * max);
 
@@ -138,28 +165,51 @@ function generateJSON() {
 }
 
 function generate() {
-  const type = document.getElementById("type").value;
-  const count = document.getElementById("count").value;
+  const typeSelection = document.getElementById("type").value;
+  const countVal = document.getElementById("count").value;
+  const count = parseInt(countVal, 10);
+  const lengthInput = document.getElementById("strLength");
+  const userLen = lengthInput ? parseInt(lengthInput.value, 10) : 8;
+
+  // Clear previous errors
+  document.getElementById("countError").textContent = "";
+  document.getElementById("lengthError").textContent = "";
+
+  let hasError = false;
+
+  if (isNaN(count) || count < 1 || count > 100) {
+    document.getElementById("countError").textContent = "Count Must be 1-100";
+    hasError = true;
+  }
+
+  if (!lengthInput.disabled && (isNaN(userLen) || userLen < 3 || userLen > 100)) {
+    document.getElementById("lengthError").textContent = "Length Must be 3-100";
+    hasError = true;
+  }
+
+  if (hasError) return;
+
+  const [baseType, subType] = typeSelection.split(":");
 
   // 🔥 Track event (place it here — BEFORE generation logic)
   if (typeof gtag === "function") {
     gtag('event', 'generate_click', {
       event_category: 'engagement',
-      event_label: type,   // email / phone / json
-      value: parseInt(count) || 1
+      event_label: baseType,   // email / phone / json
+      value: count
     });
   }
 
   let result = [];
 
   for (let i = 0; i < count; i++) {
-    if (type === "email") result.push(generateEmail());
-    if (type === "phone") result.push(generatePhone());
-    if (type === "json") result.push(generateJSON());
+    if (baseType === "email") result.push(generateEmail(subType, userLen));
+    if (baseType === "phone") result.push(generatePhone(subType));
+    if (baseType === "json") result.push(generateJSON(subType, userLen));
   }
 
   document.getElementById("output").textContent =
-    type === "json" ? JSON.stringify(result, null, 2) : result.join("\n");
+    baseType === "json" ? JSON.stringify(result, null, 2) : result.join("\n");
 }
 
 
