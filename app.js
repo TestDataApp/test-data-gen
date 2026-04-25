@@ -50,14 +50,21 @@ function generatePhone(countryCode) {
 function generateJSON(schema, userLen) {
   const mode = document.getElementById("mode")?.value || "valid"; // optional dropdown
 
+  // ---------- Realistic Data Arrays ----------
+  const firstNames = ["Aarav", "Vihaan", "Aditya", "Sai", "Arjun", "Zara", "Diya", "Aisha", "Neha", "Kavya", "John", "Emma", "Michael", "Sarah"];
+  const lastNames = ["Sharma", "Patel", "Singh", "Kumar", "Gupta", "Smith", "Johnson", "Williams", "Brown", "Jones"];
+  const cities = ["Chennai", "Bangalore", "Mumbai", "Delhi", "Hyderabad", "New York", "London", "San Francisco", "Austin"];
+  const states = ["Tamil Nadu", "Karnataka", "Maharashtra", "Delhi", "Telangana", "New York", "California", "Texas"];
+  const streets = ["123 Main St", "456 Oak Ave", "789 Pine Ln", "101 Maple Dr", "202 Elm St", "303 Cedar Blvd"];
+  const products = ["Laptop", "Smartphone", "Wireless Mouse", "Keyboard", "Headphones", "Monitor", "Smartwatch"];
+  const domains = ["gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "company.co"];
+
   // ---------- Helpers ----------
   const rand = (len) => randomString(len !== undefined ? len : userLen);
-
   const randomNumber = (max = 10000) => Math.floor(Math.random() * max);
-
   const randomPhone = () => "+91" + Math.floor(6000000000 + Math.random() * 3999999999);
-
-  const randomEmail = () => `${rand()}@test.com`;
+  const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const randomEmail = () => `${rand()}@${pickRandom(domains)}`;
 
   const pick = (valid, invalid, edge) => {
     if (mode === "invalid") return invalid;
@@ -69,7 +76,7 @@ function generateJSON(schema, userLen) {
 
   if (schema === "basic") {
     return {
-      name: pick("User_" + rand(), "", "A"),
+      name: pick(`${pickRandom(firstNames)} ${pickRandom(lastNames)}`, "", "A"),
       email: pick(randomEmail(), "invalid-email", "a@a.com"),
       phone: pick(randomPhone(), "123", "+919999999999999999")
     };
@@ -77,12 +84,12 @@ function generateJSON(schema, userLen) {
 
   if (schema === "ecommerce") {
     return {
-      userId: pick(rand(), null, ""),
-      amount: pick(randomNumber(), -500, 0),
+      userId: pick("USR_" + rand(), null, ""),
+      amount: pick(pickRandom([99, 149, 299, 499, 999]), -500, 0),
       items: [
         {
-          name: "Item_" + rand(3),
-          price: pick(100, -10, 0)
+          name: pickRandom(products),
+          price: pickRandom([49, 99, 199])
         }
       ]
     };
@@ -90,22 +97,20 @@ function generateJSON(schema, userLen) {
 
   if (schema === "auth") {
     return {
-      username: pick("user_" + rand(), "' OR 1=1 --", "u"),
-      password: pick(rand() + "123", "<script>alert(1)</script>", "123")
+      username: pick(`${pickRandom(firstNames).toLowerCase()}_${rand(4)}`, "' OR 1=1 --", "u"),
+      password: pick(rand() + "123!", "<script>alert(1)</script>", "123")
     };
   }
 
-  // ---------- NEW ADDITIONS ----------
-
   if (schema === "address") {
     return {
-      name: "User_" + rand(),
+      name: pick(`${pickRandom(firstNames)} ${pickRandom(lastNames)}`, "", "A"),
       address: {
-        street: pick("123 Main St", "", "A"),
-        city: "Chennai",
-        state: "Tamil Nadu",
-        pincode: pick("600001", "abc", "9999999999"),
-        country: "India"
+        street: pick(pickRandom(streets), "", "A"),
+        city: pickRandom(cities),
+        state: pickRandom(states),
+        pincode: pick(Math.floor(100000 + Math.random() * 900000).toString(), "abc", "9999999999"),
+        country: pickRandom(["India", "USA", "UK"])
       }
     };
   }
@@ -113,43 +118,43 @@ function generateJSON(schema, userLen) {
   if (schema === "order") {
     return {
       orderId: "ORD_" + rand(),
-      userId: rand(),
+      userId: "USR_" + rand(),
       items: [
-        { id: "item1", price: 100, qty: 2 },
-        { id: "item2", price: 250, qty: 1 }
+        { id: "item_" + rand(4), price: pickRandom([50, 100, 200]), qty: pickRandom([1, 2, 3, 4]) },
+        { id: "item_" + rand(4), price: pickRandom([250, 500, 750]), qty: pickRandom([1, 2]) }
       ],
-      totalAmount: pick(450, -100, 0),
-      paymentMethod: "UPI",
-      status: pick("PENDING", "UNKNOWN_STATUS", "")
+      totalAmount: pick(pickRandom([300, 600, 950]), -100, 0),
+      paymentMethod: pickRandom(["UPI", "Credit Card", "PayPal", "Debit Card"]),
+      status: pick(pickRandom(["PENDING", "COMPLETED", "SHIPPED", "DELIVERED"]), "UNKNOWN_STATUS", "")
     };
   }
 
   if (schema === "pagination") {
     return {
-      page: pick(1, -1, 999999),
-      limit: pick(10, 0, 1000),
-      sortBy: "createdAt",
-      order: pick("desc", "invalid", "")
+      page: pick(pickRandom([1, 2, 3, 4, 5]), -1, 999999),
+      limit: pick(pickRandom([10, 20, 50, 100]), 0, 1000),
+      sortBy: pickRandom(["createdAt", "updatedAt", "name", "price"]),
+      order: pick(pickRandom(["asc", "desc"]), "invalid", "")
     };
   }
 
   if (schema === "search") {
     return {
-      query: pick("laptop", "", "a"),
+      query: pick(pickRandom(products).toLowerCase(), "", "a"),
       filters: {
-        priceMin: pick(1000, -100, 0),
-        priceMax: pick(50000, -1, 999999999),
-        brand: ["Dell", "HP"]
+        priceMin: pick(pickRandom([0, 100, 500]), -100, 0),
+        priceMax: pick(pickRandom([1000, 5000, 10000]), -1, 999999999),
+        brand: pickRandom([["Dell", "HP"], ["Apple", "Samsung"], ["Sony", "LG"]])
       }
     };
   }
 
   if (schema === "file") {
     return {
-      fileName: pick("data.xlsx", "data.exe", ""),
-      fileSize: pick(1024000, 9999999999, 0),
+      fileName: pick(`data_${rand(4)}.xlsx`, "data.exe", ""),
+      fileSize: pick(pickRandom([1024, 20480, 1024000, 5000000]), 9999999999, 0),
       fileType: pick(
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        pickRandom(["application/json", "text/csv", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]),
         "application/unknown",
         ""
       )
@@ -163,7 +168,7 @@ function generateJSON(schema, userLen) {
         "",
         "Bearer"
       ),
-      "Content-Type": pick("application/json", "text/plain", "")
+      "Content-Type": pick(pickRandom(["application/json", "text/plain", "application/xml"]), "", "")
     };
   }
 
