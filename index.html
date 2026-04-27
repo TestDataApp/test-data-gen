@@ -22,49 +22,24 @@
   <h1>⚙️ MockData Builder</h1>
   <p>Generate QA-friendly test data instantly</p>
 
-  <div class="controls">
+  <div class="controls-top">
     <div>
-      <label>Data Type</label>
-      <select id="type" onchange="handleTypeChange()" onkeydown="if(event.key === 'Enter') generate()">
-        <optgroup label="Email">
-          <option value="email:random">Random Domain</option>
-          <option value="email:gmail.com">gmail.com</option>
-          <option value="email:multi-part-domain.co.uk">multi-part-domain.co.uk</option>
-          <option value="email:test.com">test.com</option>
-          <option value="email:verylongdomainnameexample.com">Very Long Domain</option>
-          <option value="email:outlook.com">outlook.com</option>
-          <option value="email:enterprise.org">enterprise.org</option>
-          <option value="email:startup.io">startup.io</option>
-        </optgroup>
-        <optgroup label="Phone">
-          <option value="phone:+91">India (+91)</option>
-          <option value="phone:+1">USA (+1)</option>
-          <option value="phone:+44">UK (+44)</option>
-        </optgroup>
-        <optgroup label="JSON - Basic">
-          <option value="json:basic">Basic User</option>
-          <option value="json:auth">Auth Payload</option>
-        </optgroup>
-        <optgroup label="JSON - E-commerce">
-          <option value="json:ecommerce">Simple Cart</option>
-          <option value="json:order">Order / Checkout</option>
-        </optgroup>
-        <optgroup label="JSON - User Data">
-          <option value="json:address">User with Address</option>
-        </optgroup>
-        <optgroup label="JSON - API Testing">
-          <option value="json:pagination">Pagination</option>
-          <option value="json:search">Search / Filter</option>
-        </optgroup>
-        <optgroup label="JSON - File Testing">
-          <option value="json:file">File Metadata</option>
-        </optgroup>
-        <optgroup label="JSON - Headers">
-          <option value="json:headers">Auth Headers</option>
-        </optgroup>
-      </select>
+      <label>Data Category</label>
+      <select id="mainType" onchange="handleMainTypeChange()"></select>
+    </div>
+    
+    <div>
+      <label>Sub Category</label>
+      <select id="subCategory" onchange="handleSubCategoryChange()"></select>
     </div>
 
+    <div>
+      <label>Format</label>
+      <select id="type" onchange="handleTypeChange()" onkeydown="if(event.key === 'Enter') generate()"></select>
+    </div>
+  </div>
+
+  <div class="controls-bottom">
     <div style="position: relative;">
       <label>Count</label>
       <input type="number" id="count" value="1" min="1" max="100" ondblclick="this.select()" onkeydown="if(event.key === 'Enter') generate()" />
@@ -78,7 +53,6 @@
     </div>
 
     <button class="secondary-btn" onclick="generate()">✨ Generate</button>
-  
   </div>
 
   <h3>Generated Output</h3>

@@ -1,6 +1,132 @@
+const structure = {
+  email: {
+    label: "Email",
+    categories: {
+      all: {
+        label: "Domains",
+        options: [
+          { value: "email:random", label: "Random Domain" },
+          { value: "email:gmail.com", label: "gmail.com" },
+          { value: "email:yahoo.com", label: "yahoo.com" },
+          { value: "email:multi-part-domain.co.uk", label: "multi-part-domain.co.uk" },
+          { value: "email:test.com", label: "test.com" },
+          { value: "email:verylongdomainnameexample.com", label: "Very Long Domain" },
+          { value: "email:outlook.com", label: "outlook.com" },
+          { value: "email:enterprise.org", label: "enterprise.org" },
+          { value: "email:startup.io", label: "startup.io" },
+          { value: "email:hotmail.com", label: "hotmail.com" }
+        ]
+      }
+    }
+  },
+  phone: {
+    label: "Phone",
+    categories: {
+      all: {
+        label: "Regions",
+        options: [
+          { value: "phone:+91", label: "India (+91)" },
+          { value: "phone:+1", label: "USA (+1)" },
+          { value: "phone:+44", label: "UK (+44)" }
+        ]
+      }
+    }
+  },
+  json: {
+    label: "JSON",
+    categories: {
+      basic: {
+        label: "Basic",
+        options: [
+          { value: "json:basic", label: "Basic User" },
+          { value: "json:auth", label: "Auth Payload" }
+        ]
+      },
+      ecommerce: {
+        label: "E-commerce",
+        options: [
+          { value: "json:ecommerce", label: "Simple Cart" },
+          { value: "json:order", label: "Order / Checkout" }
+        ]
+      },
+      userdata: {
+        label: "User Data",
+        options: [
+          { value: "json:address", label: "User with Address" }
+        ]
+      },
+      api: {
+        label: "API Testing",
+        options: [
+          { value: "json:pagination", label: "Pagination" },
+          { value: "json:search", label: "Search / Filter" }
+        ]
+      },
+      file: {
+        label: "File Testing",
+        options: [
+          { value: "json:file", label: "File Metadata" }
+        ]
+      },
+      headers: {
+        label: "Headers",
+        options: [
+          { value: "json:headers", label: "Auth Headers" }
+        ]
+      }
+    }
+  }
+};
+
 document.addEventListener("DOMContentLoaded", () => {
-  handleTypeChange();
+  initDropdowns();
 });
+
+function initDropdowns() {
+  const mainTypeSelect = document.getElementById("mainType");
+  mainTypeSelect.innerHTML = "";
+  for (const [key, val] of Object.entries(structure)) {
+    const opt = document.createElement("option");
+    opt.value = key;
+    opt.textContent = val.label;
+    mainTypeSelect.appendChild(opt);
+  }
+  
+  handleMainTypeChange();
+}
+
+function handleMainTypeChange() {
+  const mainTypeVal = document.getElementById("mainType").value;
+  const subCategorySelect = document.getElementById("subCategory");
+  subCategorySelect.innerHTML = "";
+  
+  const categories = structure[mainTypeVal].categories;
+  for (const [key, val] of Object.entries(categories)) {
+    const opt = document.createElement("option");
+    opt.value = key;
+    opt.textContent = val.label;
+    subCategorySelect.appendChild(opt);
+  }
+
+  handleSubCategoryChange();
+}
+
+function handleSubCategoryChange() {
+  const mainTypeVal = document.getElementById("mainType").value;
+  const subCategoryVal = document.getElementById("subCategory").value;
+  const typeSelect = document.getElementById("type");
+  typeSelect.innerHTML = "";
+
+  const options = structure[mainTypeVal].categories[subCategoryVal].options;
+  for (const option of options) {
+    const opt = document.createElement("option");
+    opt.value = option.value;
+    opt.textContent = option.label;
+    typeSelect.appendChild(opt);
+  }
+
+  handleTypeChange();
+}
 
 function handleTypeChange() {
   const typeSelection = document.getElementById("type").value;
