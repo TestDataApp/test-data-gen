@@ -75,11 +75,23 @@ const structure = {
         ]
       }
     }
+  },
+  custom: {
+    label: "Custom",
+    categories: {
+      builder: {
+        label: "Schema Builder",
+        options: [
+          { value: "custom:schema", label: "Custom JSON Schema" }
+        ]
+      }
+    }
   }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
   initDropdowns();
+  setTimeout(generate, 100);
 });
 
 function initDropdowns() {
@@ -132,7 +144,12 @@ function handleTypeChange() {
   const typeSelection = document.getElementById("type").value;
   const lengthInput = document.getElementById("strLength");
   const lengthLabel = document.getElementById("lengthLabel");
+  const customContainer = document.getElementById("customSchemaContainer");
   
+  if (customContainer) {
+    customContainer.style.display = typeSelection.startsWith("custom:") ? "block" : "none";
+  }
+
   if (typeSelection.startsWith("email:")) {
     lengthInput.disabled = false;
     if (lengthLabel) lengthLabel.textContent = "Email Prefix (Length)";
@@ -301,6 +318,40 @@ function generateJSON(schema, userLen) {
   return { message: "Unknown schema selected" };
 }
 
+function generateCustomFromSchema(schema) {
+  if (typeof schema === 'string') {
+    const type = schema.toLowerCase();
+    if (type === 'string') return randomString(10);
+    if (type === 'number') return Math.floor(Math.random() * 1000);
+    if (type === 'boolean') return Math.random() > 0.5;
+    if (type === 'email') return randomString(8) + "@example.com";
+    if (type === 'phone') return "+1" + Math.floor(2000000000 + Math.random() * 7999999999);
+    if (type === 'date') return new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString();
+    return schema; // default fallback if unrecognized
+  }
+  
+  if (Array.isArray(schema)) {
+    const result = [];
+    if (schema.length > 0) {
+      const numItems = Math.floor(Math.random() * 3) + 1;
+      for (let i = 0; i < numItems; i++) {
+        result.push(generateCustomFromSchema(schema[0]));
+      }
+    }
+    return result;
+  }
+  
+  if (typeof schema === 'object' && schema !== null) {
+    const result = {};
+    for (const key in schema) {
+      result[key] = generateCustomFromSchema(schema[key]);
+    }
+    return result;
+  }
+  
+  return schema;
+}
+
 function generate() {
   const typeSelection = document.getElementById("type").value;
   const countVal = document.getElementById("count").value;
@@ -314,8 +365,8 @@ function generate() {
 
   let hasError = false;
 
-  if (isNaN(count) || count < 1 || count > 100) {
-    document.getElementById("countError").textContent = "Count Must be 1-100";
+  if (isNaN(count) || count < 1 || count > 10000) {
+    document.getElementById("countError").textContent = "Count Must be 1-10,000";
     hasError = true;
   }
 
@@ -338,34 +389,134 @@ function generate() {
   }
 
   let result = [];
+  let parsedSchema = null;
+
+  if (baseType === "custom") {
+    const schemaText = document.getElementById("customSchemaInput").value;
+    try {
+      parsedSchema = JSON.parse(schemaText);
+      const schemaErrorEl = document.getElementById("schemaError");
+      if (schemaErrorEl) schemaErrorEl.textContent = "";
+    } catch (e) {
+      const schemaErrorEl = document.getElementById("schemaError");
+      if (schemaErrorEl) schemaErrorEl.textContent = "Invalid JSON schema";
+      return;
+    }
+  }
 
   for (let i = 0; i < count; i++) {
     if (baseType === "email") result.push(generateEmail(subType, userLen));
-    if (baseType === "phone") result.push(generatePhone(subType));
-    if (baseType === "json") result.push(generateJSON(subType, userLen));
+    else if (baseType === "phone") result.push(generatePhone(subType));
+    else if (baseType === "json") result.push(generateJSON(subType, userLen));
+    else if (baseType === "custom") result.push(generateCustomFromSchema(parsedSchema));
   }
 
   document.getElementById("output").textContent =
-    baseType === "json" ? JSON.stringify(result, null, 2) : result.join("\n");
+    (baseType === "json" || baseType === "custom") ? JSON.stringify(result, null, 2) : result.join("\n");
 }
 
 
+function toggleDownloadMenu() {
+  const menu = document.getElementById("downloadMenu");
+  if (menu) {
+    menu.style.display = menu.style.display === "none" ? "block" : "none";
+  }
+}
+
+document.addEventListener("click", function(event) {
+  const menu = document.getElementById("downloadMenu");
+  const downloadBtn = event.target.closest('button[onclick="toggleDownloadMenu()"]');
+  if (menu && menu.style.display === "block" && !downloadBtn) {
+    menu.style.display = "none";
+  }
+});
+
+function downloadFile(format) {
+  const outputText = document.getElementById("output").textContent;
+  if (!outputText) return;
+  
+  let content = outputText;
+  let type = "text/plain";
+  let extension = "txt";
+
+  if (format === 'json') {
+    type = "application/json";
+    extension = "json";
+  } else if (format === 'csv') {
+    type = "text/csv";
+    extension = "csv";
+    
+    try {
+      const data = JSON.parse(outputText);
+      if (Array.isArray(data) && data.length > 0) {
+        const headers = new Set();
+        data.forEach(item => {
+           if(typeof item === 'object' && item !== null) {
+             Object.keys(item).forEach(k => headers.add(k));
+           }
+        });
+        const headerArr = Array.from(headers);
+        
+        let csv = headerArr.join(",") + "\n";
+        data.forEach(item => {
+           if(typeof item === 'object' && item !== null) {
+             const row = headerArr.map(header => {
+                let val = item[header];
+                if (typeof val === 'object') val = JSON.stringify(val);
+                if (val === null || val === undefined) val = "";
+                val = String(val).replace(/"/g, '""');
+                if (val.includes(",") || val.includes("\n") || val.includes('"')) {
+                  val = `"${val}"`;
+                }
+                return val;
+             });
+             csv += row.join(",") + "\n";
+           } else {
+             csv += item + "\n";
+           }
+        });
+        content = csv;
+      } else if (Array.isArray(data)) {
+        content = data.join("\n");
+      }
+    } catch(e) {
+      content = outputText.split("\n").map(line => {
+        let val = line.replace(/"/g, '""');
+        if (val.includes(",") || val.includes("\n") || val.includes('"')) {
+           return `"${val}"`;
+        }
+        return val;
+      }).join("\n");
+    }
+  }
+
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  
+  const now = new Date();
+  const timestamp = now.toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  
+  a.download = `test-data-${timestamp}.${extension}`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 function copyOutput(btn) {
   const text = document.getElementById("output").textContent;
-  navigator.clipboard.writeText(text);
+  navigator.clipboard.writeText(text).then(() => {
+    const originalText = btn.textContent;
+    btn.textContent = "Copied ✅";
+    btn.disabled = true;
 
-  // Store the original text
-  const originalText = btn.textContent;
-
-  // Change the button text
-  btn.textContent = "Copied!";
-  btn.disabled = true; // Optional: prevent double-clicks
-
-  // Revert back after 1.5 seconds
-  setTimeout(() => {
-    btn.textContent = originalText;
-    btn.disabled = false;
-  }, 1500);
+    setTimeout(() => {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }, 1500);
+  });
 }
 
 function clearOutput() {
