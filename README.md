@@ -24,8 +24,11 @@
   - API Testing (Pagination, Search/Filter)
   - File Metadata
   - Request Headers (Auth & Content-Type)
-- **⚡ Bulk Generation**: Generate up to 100 records in a single click.
-- **📋 One-Click Copy**: Easily copy your generated data to the clipboard for instant use.
+- **🏗️ Custom JSON Schema Builder**: Design your own nested data structures with supported types (string, number, boolean, email, phone, date, arrays, objects).
+- **💾 Multi-Format Export**: Download your generated data instantly as JSON or CSV files.
+- **⚡ Bulk Generation**: Generate up to 10,000 records in a single click.
+- **📋 One-Click Copy**: Easily copy your generated data to the clipboard with enhanced visual feedback.
+- **🚀 Auto-Load**: Instantly view sample data right when the page initializes.
 - **🛠️ Customizable Lengths**: Control the character length of generated strings for email prefixes and JSON values.
 
 ## 🚀 Getting Started
@@ -44,10 +47,11 @@ No setup or build steps required! Run it locally straight from your browser.
 
 ## 💡 How to Use
 
-1. **Select Data Type**: Use the dropdown to choose between Email, Phone, or various JSON schemas.
-2. **Set Count**: Enter the number of items you want to generate (between 1 and 100).
-3. **Set Length**: Customize the length of email prefixes or JSON string values (between 3 and 100).
-4. **Generate & Copy**: Hit "Generate" or press `Enter`, then use the "📋 Copy" button to grab the output.
+1. **Select Data Configuration**: Navigate the intuitive 3-tier menu (Category > Sub Category > Format) to dial in exactly what you need.
+2. **Use Custom Schema (Optional)**: If selected, edit the text area to define your own JSON schema layout.
+3. **Set Count**: Enter the number of items you want to generate (between 1 and 10,000).
+4. **Set Length**: Customize the length of email prefixes or JSON string values (between 3 and 100).
+5. **Generate & Export**: Hit "✨ Generate" or press `Enter`. Use the "📋 Copy" button or open the "📥 Download" menu for JSON/CSV formats!
 
 ---
 <div align="center">

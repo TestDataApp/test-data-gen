@@ -6,6 +6,7 @@ const structure = {
         label: "Domains",
         options: [
           { value: "email:random", label: "Random Domain" },
+          { value: "email:yopmail.com", label: "yopmail.com" },
           { value: "email:gmail.com", label: "gmail.com" },
           { value: "email:yahoo.com", label: "yahoo.com" },
           { value: "email:multi-part-domain.co.uk", label: "multi-part-domain.co.uk" },
@@ -91,7 +92,6 @@ const structure = {
 
 document.addEventListener("DOMContentLoaded", () => {
   initDropdowns();
-  setTimeout(generate, 100);
 });
 
 function initDropdowns() {
@@ -176,7 +176,7 @@ function generateEmail(domainSelection, userLen) {
   let domain = domainSelection;
   if (domain === "random") {
     const domains = [
-      "gmail.com", "yahoo.com", "test.com", "hotmail.com", 
+      "gmail.com", "yahoo.com", "test.com", "hotmail.com","yopmail.com",
       "outlook.com", "enterprise.org", "startup.io", 
       "verylongdomainnameexample.com", "multi-part-domain.co.uk"
     ];
@@ -196,11 +196,81 @@ function generateJSON(schema, userLen) {
   // ---------- Realistic Data Arrays ----------
   const firstNames = ["Aarav", "Vihaan", "Aditya", "Sai", "Arjun", "Zara", "Diya", "Aisha", "Neha", "Kavya", "John", "Emma", "Michael", "Sarah"];
   const lastNames = ["Sharma", "Patel", "Singh", "Kumar", "Gupta", "Smith", "Johnson", "Williams", "Brown", "Jones"];
-  const cities = ["Chennai", "Bangalore", "Mumbai", "Delhi", "Hyderabad", "New York", "London", "San Francisco", "Austin"];
-  const states = ["Tamil Nadu", "Karnataka", "Maharashtra", "Delhi", "Telangana", "New York", "California", "Texas"];
   const streets = ["123 Main St", "456 Oak Ave", "789 Pine Ln", "101 Maple Dr", "202 Elm St", "303 Cedar Blvd"];
   const products = ["Laptop", "Smartphone", "Wireless Mouse", "Keyboard", "Headphones", "Monitor", "Smartwatch"];
   const domains = ["gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "company.co"];
+
+  // ---------- Geo Data ----------
+  const geoData = {
+    India: {
+      states: {
+        Maharashtra: {
+          cities: ["Mumbai", "Pune", "Nagpur"],
+          pincodes: ["400001", "411001", "440001"]
+        },
+        Karnataka: {
+          cities: ["Bangalore", "Mysore", "Hubli"],
+          pincodes: ["560001", "570001", "580001"]
+        },
+        Delhi: {
+          cities: ["New Delhi", "Dwarka"],
+          pincodes: ["110001", "110075"]
+        },
+        "Tamil Nadu": {
+          cities: ["Chennai", "Coimbatore", "Madurai"],
+          pincodes: ["600001", "641001", "625001"]
+        },
+      Telangana: {
+        cities: ["Hyderabad", "Warangal", "Nizamabad"],
+        pincodes: ["500001", "506001", "503001"]
+      }
+      }
+    },
+    USA: {
+      states: {
+        California: {
+          cities: ["Los Angeles", "San Francisco", "San Diego"],
+          pincodes: ["90001", "94101", "92101"]
+        },
+        "New York": {
+          cities: ["New York City", "Buffalo", "Rochester"],
+          pincodes: ["10001", "14201", "14601"]
+        },
+        Texas: {
+          cities: ["Houston", "Austin", "Dallas"],
+          pincodes: ["77001", "73301", "75201"]
+        },
+        Florida: {
+        cities: ["Miami", "Orlando", "Tampa"],
+          pincodes: ["33101", "32801", "33601"]
+      },
+        Illinois: {
+          cities: ["Chicago", "Springfield", "Naperville"],
+          pincodes: ["60601", "62701", "60540"]
+        }
+      }
+    },
+    UK: {
+      states: {
+        England: {
+          cities: ["London", "Manchester", "Birmingham"],
+          pincodes: ["EC1A 1BB", "M1 1AE", "B1 1AA"]
+        },
+        Scotland: {
+          cities: ["Edinburgh", "Glasgow", "Aberdeen"],
+          pincodes: ["EH1 1AA", "G1 1AA", "AB10 1AA"]
+        },
+        Wales: {
+          cities: ["Cardiff", "Swansea", "Newport"],
+          pincodes: ["CF10 1AA", "SA1 1AA", "NP10 1AA"]
+      },
+        "Northern Ireland": {
+          cities: ["Belfast", "Derry", "Lisburn"],
+          pincodes: ["BT1 1AA", "BT48 6AA", "BT28 1AA"]
+        }
+      }
+    }
+  };
 
   // ---------- Helpers ----------
   const rand = (len) => randomString(len !== undefined ? len : userLen);
@@ -208,6 +278,18 @@ function generateJSON(schema, userLen) {
   const randomPhone = () => "+91" + Math.floor(6000000000 + Math.random() * 3999999999);
   const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
   const randomEmail = () => `${rand()}@${pickRandom(domains)}`;
+
+  const generateGeoAddress = () => {
+    const country = pickRandom(Object.keys(geoData));
+    const state = pickRandom(Object.keys(geoData[country].states));
+    const stateData = geoData[country].states[state];
+    return {
+      country,
+      state,
+      city: pickRandom(stateData.cities),
+      pincode: pickRandom(stateData.pincodes)
+    };
+  };
 
   const pick = (valid, invalid, edge) => {
     if (mode === "invalid") return invalid;
@@ -246,14 +328,15 @@ function generateJSON(schema, userLen) {
   }
 
   if (schema === "address") {
+    const geo = generateGeoAddress();
     return {
       name: pick(`${pickRandom(firstNames)} ${pickRandom(lastNames)}`, "", "A"),
       address: {
         street: pick(pickRandom(streets), "", "A"),
-        city: pickRandom(cities),
-        state: pickRandom(states),
-        pincode: pick(Math.floor(100000 + Math.random() * 900000).toString(), "abc", "9999999999"),
-        country: pickRandom(["India", "USA", "UK"])
+        city: geo.city,
+        state: geo.state,
+        pincode: pick(geo.pincode, "abc", "9999999999"),
+        country: geo.country
       }
     };
   }
@@ -413,6 +496,11 @@ function generate() {
 
   document.getElementById("output").textContent =
     (baseType === "json" || baseType === "custom") ? JSON.stringify(result, null, 2) : result.join("\n");
+  
+  const downloadBtn = document.getElementById("downloadBtn");
+  if (downloadBtn) {
+    downloadBtn.disabled = false;
+  }
 }
 
 
@@ -522,6 +610,11 @@ function copyOutput(btn) {
 function clearOutput() {
   // Target the pre tag and empty its content
   document.getElementById("output").textContent = "";
+  
+  const downloadBtn = document.getElementById("downloadBtn");
+  if (downloadBtn) {
+    downloadBtn.disabled = true;
+  }
 }
 
 

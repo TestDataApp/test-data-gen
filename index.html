@@ -76,7 +76,7 @@
   <div class="output-header">
     <h3>Generated Output</h3>
     <div style="position: relative;">
-      <button class="action-btn" onclick="toggleDownloadMenu()" style="font-size: 15px; padding: 8px 12px;">📥 Download ▾</button>
+      <button id="downloadBtn" class="action-btn" onclick="toggleDownloadMenu()" style="font-size: 15px; padding: 8px 12px;" disabled>📥 Download ▾</button>
       <div id="downloadMenu" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 5px; background: white; min-width: 120px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 8px; border: 1px solid #d1d5db; z-index: 10; overflow: hidden;">
         <div onclick="downloadFile('json'); toggleDownloadMenu()" style="padding: 10px 15px; cursor: pointer; text-align: left; font-size: 14px; font-weight: 600; color: #374151;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">📄 JSON</div>
         <div onclick="downloadFile('csv'); toggleDownloadMenu()" style="padding: 10px 15px; cursor: pointer; text-align: left; font-size: 14px; font-weight: 600; border-top: 1px solid #e5e7eb; color: #374151;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">📊 CSV</div>
