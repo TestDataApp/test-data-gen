@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TestDataGen</title>
   <link rel="stylesheet" href="style.css" />
 
@@ -10,56 +11,78 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-  
+    function gtag() { dataLayer.push(arguments); }
+
     gtag('js', new Date());
     gtag('config', 'G-JFE7XL3TNK');
   </script>
 </head>
+
 <body>
 
-<div class="container">
-  <h1>⚙️ MockData Builder</h1>
-  <p>Generate QA-friendly test data instantly</p>
+  <div class="container">
+    <h1>⚙️ MockData Builder</h1>
+    <p>Generate QA-friendly test data instantly</p>
 
-  <div class="controls-top">
-    <div>
-      <label>Data Category</label>
-      <select id="mainType" onchange="handleMainTypeChange()"></select>
-    </div>
-    
-    <div>
-      <label>Sub Category</label>
-      <select id="subCategory" onchange="handleSubCategoryChange()"></select>
+    <div class="controls-top">
+      <div>
+        <label>Data Category</label>
+        <select id="mainType" onchange="handleMainTypeChange()"></select>
+      </div>
+
+      <div>
+        <label>Sub Category</label>
+        <select id="subCategory" onchange="handleSubCategoryChange()"></select>
+      </div>
+
+      <div>
+        <label>Format</label>
+        <select id="type" onchange="handleTypeChange()" onkeydown="if(event.key === 'Enter') generate()"></select>
+      </div>
+
+      <div>
+        <label>Test Type</label>
+        <select id="testType">
+          <option value="Valid">Valid</option>
+          <option value="Invalid">Invalid</option>
+          <option value="Edge">Edge</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Complexity</label>
+        <select id="complexity">
+          <option value="Simple">Simple</option>
+          <option value="Medium">Medium</option>
+          <option value="Complex">Complex</option>
+        </select>
+      </div>
     </div>
 
-    <div>
-      <label>Format</label>
-      <select id="type" onchange="handleTypeChange()" onkeydown="if(event.key === 'Enter') generate()"></select>
-    </div>
-  </div>
+    <div class="controls-bottom">
+      <div style="position: relative;">
+        <label>Count</label>
+        <input type="number" id="count" value="5" min="1" max="10000" ondblclick="this.select()"
+          onkeydown="if(event.key === 'Enter') generate()" />
+        <span id="countError" class="error-msg"></span>
+      </div>
 
-  <div class="controls-bottom">
-    <div style="position: relative;">
-      <label>Count</label>
-      <input type="number" id="count" value="5" min="1" max="10000" ondblclick="this.select()" onkeydown="if(event.key === 'Enter') generate()" />
-      <span id="countError" class="error-msg"></span>
-    </div>
+      <div style="position: relative;">
+        <label id="lengthLabel">Email Prefix (Length)</label>
+        <input type="number" id="strLength" value="8" min="3" max="100" ondblclick="this.select()"
+          onkeydown="if(event.key === 'Enter') generate()" />
+        <span id="lengthError" class="error-msg"></span>
+      </div>
 
-    <div style="position: relative;">
-      <label id="lengthLabel">Email Prefix (Length)</label>
-      <input type="number" id="strLength" value="8" min="3" max="100" ondblclick="this.select()" onkeydown="if(event.key === 'Enter') generate()" />
-      <span id="lengthError" class="error-msg"></span>
+      <button class="secondary-btn" onclick="generate()">✨ Generate</button>
     </div>
-
-    <button class="secondary-btn" onclick="generate()">✨ Generate</button>
-  </div>
-  <div id="customSchemaContainer" style="display: none; margin-top: 15px;">
-    <label style="display: flex; justify-content: space-between;">
-      Custom JSON Schema 
-      <span id="schemaError" class="error-msg" style="position: static; color: #ef4444;"></span>
-    </label>
-    <textarea id="customSchemaInput" rows="12" style="width: 100%; box-sizing: border-box; font-family: monospace; padding: 10px; border-radius: 8px; border: 1px solid #d1d5db; resize: vertical;">{
+    <div id="customSchemaContainer" style="display: none; margin-top: 15px;">
+      <label style="display: flex; justify-content: space-between;">
+        Custom JSON Schema
+        <span id="schemaError" class="error-msg" style="position: static; color: #ef4444;"></span>
+      </label>
+      <textarea id="customSchemaInput" rows="12"
+        style="width: 100%; box-sizing: border-box; font-family: monospace; padding: 10px; border-radius: 8px; border: 1px solid #d1d5db; resize: vertical;">{
   "user": {
     "name": "string",
     "email": "email",
@@ -71,56 +94,63 @@
     ]
   }
 }</textarea>
-  </div>
+    </div>
 
-  <div class="output-header">
-    <h3>Generated Output</h3>
-    <div style="position: relative;">
-      <button id="downloadBtn" class="action-btn" onclick="toggleDownloadMenu()" style="font-size: 15px; padding: 8px 12px;" disabled>📥 Download ▾</button>
-      <div id="downloadMenu" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 5px; background: white; min-width: 120px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 8px; border: 1px solid #d1d5db; z-index: 10; overflow: hidden;">
-        <div onclick="downloadFile('json'); toggleDownloadMenu()" style="padding: 10px 15px; cursor: pointer; text-align: left; font-size: 14px; font-weight: 600; color: #374151;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">📄 JSON</div>
-        <div onclick="downloadFile('csv'); toggleDownloadMenu()" style="padding: 10px 15px; cursor: pointer; text-align: left; font-size: 14px; font-weight: 600; border-top: 1px solid #e5e7eb; color: #374151;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">📊 CSV</div>
+    <div class="output-header">
+      <h3>Generated Output</h3>
+      <div style="position: relative;">
+        <button id="downloadBtn" class="action-btn" onclick="toggleDownloadMenu()"
+          style="font-size: 15px; padding: 8px 12px;" disabled>📥 Download ▾</button>
+        <div id="downloadMenu"
+          style="display: none; position: absolute; top: 100%; right: 0; margin-top: 5px; background: white; min-width: 120px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 8px; border: 1px solid #d1d5db; z-index: 10; overflow: hidden;">
+          <div onclick="downloadFile('json'); toggleDownloadMenu()"
+            style="padding: 10px 15px; cursor: pointer; text-align: left; font-size: 14px; font-weight: 600; color: #374151;"
+            onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">📄 JSON</div>
+          <div onclick="downloadFile('csv'); toggleDownloadMenu()"
+            style="padding: 10px 15px; cursor: pointer; text-align: left; font-size: 14px; font-weight: 600; border-top: 1px solid #e5e7eb; color: #374151;"
+            onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">📊 CSV</div>
+        </div>
       </div>
     </div>
-  </div>
-  <pre id="output"></pre>
-  <div class="output-actions">
-    <button class="action-btn" onclick="copyOutput(this)">📋 Copy</button>
-    <button class="action-btn" onclick="clearOutput()">🗑️ Clear</button>
-  </div>
-
-  <hr/>
-
-
-  <!-- Collapsible Feedback -->
-  <details class="feedback">
-    <summary><b>Feedback</b> (optional)</summary>
-
-    <p class="note">
-      You can submit feedback anonymously. If you'd like a response, provide your email.
-    </p>
-
-    <label class="checkbox">
-      <input type="checkbox" id="anonymous" checked onchange="toggleIdentity()" />
-      Submit anonymously
-    </label>
-
-    <div id="identityFields" class="row" style="display:none;">
-      <input id="name" placeholder="Your Name (optional)" />
-      <input id="email" placeholder="Your Email (optional)" />
+    <pre id="output"></pre>
+    <div class="output-actions">
+      <button class="action-btn" onclick="copyOutput(this)">📋 Copy</button>
+      <button class="action-btn" onclick="clearOutput()">🗑️ Clear</button>
     </div>
 
-    <textarea id="message" placeholder="Your feedback"></textarea>
+    <hr />
 
-    <button class="primary-btn" onclick="submitFeedback()">Send Feedback</button>
-  </details>
 
-</div>
+    <!-- Collapsible Feedback -->
+    <details class="feedback">
+      <summary><b>Feedback</b> (optional)</summary>
 
-<script src="app.js"></script>
-<script>
-  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-</script>
-<script defer src="/_vercel/insights/script.js"></script>
+      <p class="note">
+        You can submit feedback anonymously. If you'd like a response, provide your email.
+      </p>
+
+      <label class="checkbox">
+        <input type="checkbox" id="anonymous" checked onchange="toggleIdentity()" />
+        Submit anonymously
+      </label>
+
+      <div id="identityFields" class="row" style="display:none;">
+        <input id="name" placeholder="Your Name (optional)" />
+        <input id="email" placeholder="Your Email (optional)" />
+      </div>
+
+      <textarea id="message" placeholder="Your feedback"></textarea>
+
+      <button class="primary-btn" onclick="submitFeedback()">Send Feedback</button>
+    </details>
+
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
 </body>
+
 </html>

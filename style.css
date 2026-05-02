@@ -20,7 +20,7 @@ p {
   background: white;
   padding: 30px;
   border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
 }
 
 .controls-top {
@@ -39,13 +39,13 @@ p {
   margin-top: 15px;
 }
 
-.controls-top select, 
+.controls-top select,
 .controls-bottom input {
   width: 100%;
   padding: 10px 12px;
   margin: 0;
   box-sizing: border-box;
-  height: 42px; 
+  height: 42px;
   font-weight: 550;
   color: #111827;
   background: #f9fafb;
@@ -57,7 +57,7 @@ button {
   border: 1px solid #d1d5db;
   font-weight: bold;
   border-radius: 8px;
-  padding: 8px; 
+  padding: 8px;
   margin: 3px;
 }
 
@@ -163,7 +163,7 @@ pre {
 
 .secondary-btn {
   /* background: linear-gradient(135deg, #6366f1, #4f46e5); */
-  background: linear-gradient(135deg,#ee5555, #e30110 );
+  background: linear-gradient(135deg, #ee5555, #e30110);
   color: white;
   border: none;
   padding: 10px 18px;
@@ -208,7 +208,8 @@ input:focus {
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 }
 
-.controls-bottom input:disabled {
+.controls-bottom input:disabled,
+.controls-top select:disabled {
   background-color: #e5e7eb;
   color: #9ca3af;
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='red' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='4.93' y1='4.93' x2='19.07' y2='19.07'/%3E%3C/svg%3E") 8 8, not-allowed;
@@ -296,5 +297,5 @@ select:focus {
 }
 
 value {
-  font-weight:1000;
+  font-weight: 1000;
 }

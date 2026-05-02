@@ -36,52 +36,68 @@ const structure = {
   json: {
     label: "JSON",
     categories: {
-      basic: {
-        label: "Basic",
+      auth: {
+        label: "Authentication",
         options: [
-          { value: "json:basic", label: "Basic User" },
-          { value: "json:auth", label: "Auth Payload" }
+          { value: "json:auth_login", label: "Login Request" },
+          { value: "json:auth_signup", label: "Signup Request" },
+          { value: "json:auth_otp", label: "OTP Verification" },
+          { value: "json:auth_token", label: "Token Refresh" },
+          { value: "json:auth_invalid", label: "Invalid Credentials" }
+        ]
+      },
+      user: {
+        label: "User Management",
+        options: [
+          { value: "json:user_create", label: "Create User" },
+          { value: "json:user_update", label: "Update Profile" },
+          { value: "json:user_list", label: "User List" },
+          { value: "json:user_role", label: "Role-based User" },
+          { value: "json:user_invalid", label: "Invalid User Data" }
         ]
       },
       ecommerce: {
         label: "E-commerce",
         options: [
-          { value: "json:ecommerce", label: "Simple Cart" },
-          { value: "json:order", label: "Order / Checkout" }
-        ]
-      },
-      userdata: {
-        label: "User Data",
-        options: [
-          { value: "json:address", label: "User with Address" }
+          { value: "json:eco_catalog", label: "Product Catalog" },
+          { value: "json:eco_cart", label: "Cart" },
+          { value: "json:eco_checkout", label: "Checkout" },
+          { value: "json:eco_payment", label: "Payment" },
+          { value: "json:eco_history", label: "Order History" }
         ]
       },
       api: {
         label: "API Testing",
         options: [
-          { value: "json:pagination", label: "Pagination" },
-          { value: "json:search", label: "Search / Filter" }
+          { value: "json:api_pagination", label: "Pagination" },
+          { value: "json:api_search", label: "Search/Filter" },
+          { value: "json:api_sort", label: "Sorting" },
+          { value: "json:api_bulk", label: "Bulk Request" },
+          { value: "json:api_error", label: "Error Response" }
         ]
       },
       file: {
-        label: "File Testing",
+        label: "File Handling",
         options: [
-          { value: "json:file", label: "File Metadata" }
+          { value: "json:file_upload", label: "File Upload" },
+          { value: "json:file_download", label: "File Download" },
+          { value: "json:file_csv", label: "CSV/Excel Data" },
+          { value: "json:file_large", label: "Large Payload" },
+          { value: "json:file_invalid", label: "Invalid File" }
         ]
       },
-      headers: {
-        label: "Headers",
+      edge: {
+        label: "Edge Cases",
         options: [
-          { value: "json:headers", label: "Auth Headers" }
+          { value: "json:edge_null", label: "Null Fields" },
+          { value: "json:edge_max", label: "Max Length" },
+          { value: "json:edge_special", label: "Special Characters" },
+          { value: "json:edge_duplicate", label: "Duplicate Data" },
+          { value: "json:edge_random", label: "Random Data" }
         ]
-      }
-    }
-  },
-  custom: {
-    label: "Custom",
-    categories: {
-      builder: {
-        label: "Schema Builder",
+      },
+      custom: {
+        label: "Custom",
         options: [
           { value: "custom:schema", label: "Custom JSON Schema" }
         ]
@@ -103,7 +119,7 @@ function initDropdowns() {
     opt.textContent = val.label;
     mainTypeSelect.appendChild(opt);
   }
-  
+
   handleMainTypeChange();
 }
 
@@ -111,7 +127,7 @@ function handleMainTypeChange() {
   const mainTypeVal = document.getElementById("mainType").value;
   const subCategorySelect = document.getElementById("subCategory");
   subCategorySelect.innerHTML = "";
-  
+
   const categories = structure[mainTypeVal].categories;
   for (const [key, val] of Object.entries(categories)) {
     const opt = document.createElement("option");
@@ -146,8 +162,18 @@ function handleTypeChange() {
   const lengthLabel = document.getElementById("lengthLabel");
   const customContainer = document.getElementById("customSchemaContainer");
   
+  const testTypeSelect = document.getElementById("testType");
+  const complexitySelect = document.getElementById("complexity");
+
   if (customContainer) {
     customContainer.style.display = typeSelection.startsWith("custom:") ? "block" : "none";
+  }
+
+  if (testTypeSelect) {
+    testTypeSelect.disabled = !typeSelection.startsWith("json:");
+  }
+  if (complexitySelect) {
+    complexitySelect.disabled = !typeSelection.startsWith("json:");
   }
 
   if (typeSelection.startsWith("email:")) {
@@ -176,8 +202,8 @@ function generateEmail(domainSelection, userLen) {
   let domain = domainSelection;
   if (domain === "random") {
     const domains = [
-      "gmail.com", "yahoo.com", "test.com", "hotmail.com","yopmail.com",
-      "outlook.com", "enterprise.org", "startup.io", 
+      "gmail.com", "yahoo.com", "test.com", "hotmail.com", "yopmail.com",
+      "outlook.com", "enterprise.org", "startup.io",
       "verylongdomainnameexample.com", "multi-part-domain.co.uk"
     ];
     domain = domains[Math.floor(Math.random() * domains.length)];
@@ -190,215 +216,270 @@ function generatePhone(countryCode) {
   return countryCode + num;
 }
 
-function generateJSON(schema, userLen) {
-  const mode = document.getElementById("mode")?.value || "valid"; // optional dropdown
+function generateJSON(schema, userLen, index = 0) {
+  const testType = document.getElementById("testType")?.value || "Valid";
+  const complexity = document.getElementById("complexity")?.value || "Simple";
 
-  // ---------- Realistic Data Arrays ----------
-  const firstNames = ["Aarav", "Vihaan", "Aditya", "Sai", "Arjun", "Zara", "Diya", "Aisha", "Neha", "Kavya", "John", "Emma", "Michael", "Sarah"];
-  const lastNames = ["Sharma", "Patel", "Singh", "Kumar", "Gupta", "Smith", "Johnson", "Williams", "Brown", "Jones"];
-  const streets = ["123 Main St", "456 Oak Ave", "789 Pine Ln", "101 Maple Dr", "202 Elm St", "303 Cedar Blvd"];
-  const products = ["Laptop", "Smartphone", "Wireless Mouse", "Keyboard", "Headphones", "Monitor", "Smartwatch"];
-  const domains = ["gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "company.co"];
-
-  // ---------- Geo Data ----------
-  const geoData = {
-    India: {
-      states: {
-        Maharashtra: {
-          cities: ["Mumbai", "Pune", "Nagpur"],
-          pincodes: ["400001", "411001", "440001"]
-        },
-        Karnataka: {
-          cities: ["Bangalore", "Mysore", "Hubli"],
-          pincodes: ["560001", "570001", "580001"]
-        },
-        Delhi: {
-          cities: ["New Delhi", "Dwarka"],
-          pincodes: ["110001", "110075"]
-        },
-        "Tamil Nadu": {
-          cities: ["Chennai", "Coimbatore", "Madurai"],
-          pincodes: ["600001", "641001", "625001"]
-        },
-      Telangana: {
-        cities: ["Hyderabad", "Warangal", "Nizamabad"],
-        pincodes: ["500001", "506001", "503001"]
-      }
-      }
-    },
-    USA: {
-      states: {
-        California: {
-          cities: ["Los Angeles", "San Francisco", "San Diego"],
-          pincodes: ["90001", "94101", "92101"]
-        },
-        "New York": {
-          cities: ["New York City", "Buffalo", "Rochester"],
-          pincodes: ["10001", "14201", "14601"]
-        },
-        Texas: {
-          cities: ["Houston", "Austin", "Dallas"],
-          pincodes: ["77001", "73301", "75201"]
-        },
-        Florida: {
-        cities: ["Miami", "Orlando", "Tampa"],
-          pincodes: ["33101", "32801", "33601"]
-      },
-        Illinois: {
-          cities: ["Chicago", "Springfield", "Naperville"],
-          pincodes: ["60601", "62701", "60540"]
-        }
-      }
-    },
-    UK: {
-      states: {
-        England: {
-          cities: ["London", "Manchester", "Birmingham"],
-          pincodes: ["EC1A 1BB", "M1 1AE", "B1 1AA"]
-        },
-        Scotland: {
-          cities: ["Edinburgh", "Glasgow", "Aberdeen"],
-          pincodes: ["EH1 1AA", "G1 1AA", "AB10 1AA"]
-        },
-        Wales: {
-          cities: ["Cardiff", "Swansea", "Newport"],
-          pincodes: ["CF10 1AA", "SA1 1AA", "NP10 1AA"]
-      },
-        "Northern Ireland": {
-          cities: ["Belfast", "Derry", "Lisburn"],
-          pincodes: ["BT1 1AA", "BT48 6AA", "BT28 1AA"]
-        }
-      }
-    }
+  const pools = {
+    names: ["Arun", "Priya", "Rahul", "Sneha", "Karthik", "Divya", "Amit", "Neha", "Rohit", "Anjali"],
+    emails: ["arun@test.com", "priya@test.com", "rahul@test.com", "sneha@test.com", "karthik@test.com", "divya@test.com", "amit@test.com", "neha@test.com", "rohit@test.com", "anjali@test.com"],
+    passwords: ["Pass@123", "Priya#456", "Rahul$789", "Sneha%012", "Karthik^345", "Divya&678", "Amit*901", "Neha(234", "Rohit)567", "Anjali_890"],
+    products: ["Laptop", "Mobile", "Tablet", "Mouse", "Keyboard", "Monitor", "Camera", "Watch", "Speaker", "Headphones"],
+    roles: ["Admin", "User", "Manager", "Guest", "Support", "Editor", "Viewer", "Moderator", "Superadmin", "Analyst"],
+    statuses: ["Active", "Inactive", "Pending", "Suspended", "Banned", "Deleted", "Archived", "Locked", "Approved", "Rejected"],
+    companies: ["TechCorp", "InnovateX", "GlobalSys", "Nexus", "Pioneer", "Apex", "Zenith", "Quantum", "Stellar", "Vanguard"],
+    ids: ["U101", "U102", "U103", "U104", "U105", "U106", "U107", "U108", "U109", "U110"],
+    paymentMethods: ["UPI", "Credit Card", "Debit Card", "Net Banking", "Wallet", "PayPal", "Stripe", "Cash", "Crypto", "Bank Transfer"],
+    fileNames: ["report.pdf", "data.csv", "image.png", "doc.docx", "sheet.xlsx", "archive.zip", "video.mp4", "audio.mp3", "script.js", "style.css"]
   };
 
-  // ---------- Helpers ----------
-  const rand = (len) => randomString(len !== undefined ? len : userLen);
-  const randomNumber = (max = 10000) => Math.floor(Math.random() * max);
-  const randomPhone = () => "+91" + Math.floor(6000000000 + Math.random() * 3999999999);
-  const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
-  const randomEmail = () => `${rand()}@${pickRandom(domains)}`;
+  const getPool = (poolName) => pools[poolName][index % pools[poolName].length];
 
-  const generateGeoAddress = () => {
-    const country = pickRandom(Object.keys(geoData));
-    const state = pickRandom(Object.keys(geoData[country].states));
-    const stateData = geoData[country].states[state];
-    return {
-      country,
-      state,
-      city: pickRandom(stateData.cities),
-      pincode: pickRandom(stateData.pincodes)
-    };
-  };
-
-  const pick = (valid, invalid, edge) => {
-    if (mode === "invalid") return invalid;
-    if (mode === "edge") return edge;
+  const getVal = (valid, invalid, edge) => {
+    if (testType === "Invalid") return invalid !== undefined ? invalid : "invalid";
+    if (testType === "Edge") return edge !== undefined ? edge : null;
     return valid;
   };
 
-  // ---------- Schemas ----------
+  const getComplex = (simple, medium, complex) => {
+    if (complexity === "Complex") return complex !== undefined ? complex : medium;
+    if (complexity === "Medium") return medium !== undefined ? medium : simple;
+    return simple;
+  };
 
-  if (schema === "basic") {
-    return {
-      name: pick(`${pickRandom(firstNames)} ${pickRandom(lastNames)}`, "", "A"),
-      email: pick(randomEmail(), "invalid-email", "a@a.com"),
-      phone: pick(randomPhone(), "123", "+919999999999999999")
+  // 1. Authentication
+  if (schema === "auth_login") {
+    const base = {
+      email: getVal(getPool("emails"), "wrong-format", null),
+      password: getVal(getPool("passwords"), "", "A".repeat(100))
     };
+    return getComplex(base, { user: base, timestamp: "2026-05-02T10:00:00Z" }, { loginRequest: { user: base, metadata: { ip: "192.168.1.1", device: "Desktop", attempts: getVal(1, -1, 999) } } });
+  }
+  if (schema === "auth_signup") {
+    const base = {
+      name: getVal(getPool("names"), 1234, ""),
+      email: getVal(getPool("emails"), "wrong-format", null),
+      password: getVal(getPool("passwords"), "123", "A".repeat(100)),
+      confirmPassword: getVal(getPool("passwords"), "mismatch", "A".repeat(100))
+    };
+    return getComplex(base, { user: base, role: getVal(getPool("roles"), 99, null) }, { signupRequest: { user: base, preferences: { newsletter: getVal(true, "yes", null) } } });
+  }
+  if (schema === "auth_otp") {
+    const base = {
+      phone: getVal("+1234567890", "phone", "+9999999999999999"),
+      otp: getVal("123456", "abc", "000000")
+    };
+    return getComplex(base, { verification: base }, { otpRequest: { data: base, method: getVal("SMS", "Pigeon", null) } });
+  }
+  if (schema === "auth_token") {
+    const base = {
+      refreshToken: getVal("dGhpcy1pcy1hLXJlZnJlc2gtdG9rZW4=", "invalid", null),
+      grantType: getVal("refresh_token", "wrong_grant", "")
+    };
+    return getComplex(base, { tokenRequest: base }, { refreshPayload: { data: base, client: { id: "client_123" } } });
+  }
+  if (schema === "auth_invalid") {
+    const base = {
+      username: getVal(getPool("emails"), "1=1", null),
+      password: getVal("WrongPass", "", "A".repeat(200))
+    };
+    return getComplex(base, { errorTest: base }, { attackPayload: { credentials: base, injection: getVal(false, true, null) } });
   }
 
-  if (schema === "ecommerce") {
-    return {
-      userId: pick("USR_" + rand(), null, ""),
-      amount: pick(pickRandom([99, 149, 299, 499, 999]), -500, 0),
-      items: [
-        {
-          name: pickRandom(products),
-          price: pickRandom([49, 99, 199])
-        }
-      ]
+  // 2. User Management
+  if (schema === "user_create") {
+    const base = {
+      firstName: getVal(getPool("names"), 123, ""),
+      email: getVal(getPool("emails"), "no-at-sign", null),
+      department: getVal("Engineering", "Not-A-Dept", null)
     };
+    return getComplex(base, { newUser: base, role: getPool("roles") }, { userCreation: { profile: base, settings: { timezone: "UTC" } } });
+  }
+  if (schema === "user_update") {
+    const base = {
+      id: getVal(getPool("ids"), "NaN", null),
+      status: getVal(getPool("statuses"), "Unknown", null)
+    };
+    return getComplex(base, { updateData: base, modifiedBy: getPool("names") }, { userUpdate: { target: base, audit: { reason: "User Request" } } });
+  }
+  if (schema === "user_list") {
+    const base = {
+      users: [getPool("names"), "User2"],
+      count: getVal(2, "two", -1)
+    };
+    return getComplex(base, { data: base, page: 1 }, { userListResponse: { results: base, pagination: { total: 100, current: 1 } } });
+  }
+  if (schema === "user_role") {
+    const base = {
+      userId: getVal(getPool("ids"), "none", null),
+      newRole: getVal(getPool("roles"), "SuperGod", null)
+    };
+    return getComplex(base, { roleAssignment: base }, { roleUpdateEvent: { payload: base, adminId: "A101" } });
+  }
+  if (schema === "user_invalid") {
+    const base = {
+      invalidName: getVal("TestUser", 12345, null),
+      badEmail: getVal("test@test.com", "test.com", "")
+    };
+    return getComplex(base, { brokenData: base }, { negativeTestPayload: { data: base, expectedError: "ValidationError" } });
   }
 
-  if (schema === "auth") {
-    return {
-      username: pick(`${pickRandom(firstNames).toLowerCase()}_${rand(4)}`, "' OR 1=1 --", "u"),
-      password: pick(rand() + "123!", "<script>alert(1)</script>", "123")
+  // 3. E-commerce
+  if (schema === "eco_catalog") {
+    const base = {
+      productId: getVal(getPool("ids"), "NaN", null),
+      productName: getVal(getPool("products"), "", "A".repeat(200)),
+      price: getVal(99.99, "free", -50)
     };
+    return getComplex(base, { catalogItem: base, stock: getVal(10, "none", -1) }, { productEntry: { item: base, metadata: { tags: ["sale", "new"] } } });
+  }
+  if (schema === "eco_cart") {
+    const base = {
+      cartId: getVal("C100", "invalid", null),
+      itemId: getVal(getPool("ids"), "none", null),
+      qty: getVal(2, "two", -10)
+    };
+    return getComplex(base, { cart: base, subtotal: 199.98 }, { shoppingCart: { details: base, session: { active: true } } });
+  }
+  if (schema === "eco_checkout") {
+    const base = {
+      cartId: getVal("C100", "invalid", null),
+      shippingCode: getVal("12345", "abc", null)
+    };
+    return getComplex(base, { checkoutPayload: base, address: "123 Main St" }, { checkoutProcess: { orderDetails: base, billing: { sameAsShipping: true } } });
+  }
+  if (schema === "eco_payment") {
+    const base = {
+      orderId: getVal("O500", "none", null),
+      method: getVal(getPool("paymentMethods"), "Barter", null),
+      amount: getVal(250.00, "lot", -100)
+    };
+    return getComplex(base, { paymentInfo: base, currency: "USD" }, { transaction: { data: base, gateway: { provider: "Stripe", status: "Init" } } });
+  }
+  if (schema === "eco_history") {
+    const base = {
+      userId: getVal(getPool("ids"), "NaN", null),
+      ordersFound: getVal(5, "five", -1)
+    };
+    return getComplex(base, { history: base, lastOrder: "O499" }, { orderHistoryResponse: { summary: base, orders: [{ id: "O499", total: 100 }] } });
   }
 
-  if (schema === "address") {
-    const geo = generateGeoAddress();
-    return {
-      name: pick(`${pickRandom(firstNames)} ${pickRandom(lastNames)}`, "", "A"),
-      address: {
-        street: pick(pickRandom(streets), "", "A"),
-        city: geo.city,
-        state: geo.state,
-        pincode: pick(geo.pincode, "abc", "9999999999"),
-        country: geo.country
-      }
+  // 4. API Testing
+  if (schema === "api_pagination") {
+    const base = {
+      page: getVal(1, "one", -1),
+      limit: getVal(10, "ten", 1000000)
     };
+    return getComplex(base, { pagination: base, totalPages: 5 }, { apiPagination: { params: base, links: { next: "/api?page=2" } } });
+  }
+  if (schema === "api_search") {
+    const base = {
+      query: getVal(getPool("products"), 123, "A".repeat(500)),
+      filterCategory: getVal("Electronics", 1, null)
+    };
+    return getComplex(base, { searchRequest: base, exactMatch: false }, { searchPayload: { criteria: base, options: { fuzzy: true } } });
+  }
+  if (schema === "api_sort") {
+    const base = {
+      sortBy: getVal("createdAt", "invalidField", null),
+      order: getVal("asc", "diagonal", "")
+    };
+    return getComplex(base, { sorting: base }, { sortRequest: { params: base, multiSort: [base] } });
+  }
+  if (schema === "api_bulk") {
+    const base = {
+      operations: getVal(["op1", "op2"], "string", null)
+    };
+    return getComplex(base, { bulkRequest: base, stopOnError: true }, { batchProcess: { jobs: base, config: { retries: 3 } } });
+  }
+  if (schema === "api_error") {
+    const base = {
+      errorCode: getVal(404, "four-oh-four", -1),
+      message: getVal("Not Found", 123, null)
+    };
+    return getComplex(base, { errorResponse: base, timestamp: "2026-05-02T10:00:00Z" }, { errorDetails: { error: base, traceId: "trace_789" } });
   }
 
-  if (schema === "order") {
-    return {
-      orderId: "ORD_" + rand(),
-      userId: "USR_" + rand(),
-      items: [
-        { id: "item_" + rand(4), price: pickRandom([50, 100, 200]), qty: pickRandom([1, 2, 3, 4]) },
-        { id: "item_" + rand(4), price: pickRandom([250, 500, 750]), qty: pickRandom([1, 2]) }
-      ],
-      totalAmount: pick(pickRandom([300, 600, 950]), -100, 0),
-      paymentMethod: pickRandom(["UPI", "Credit Card", "PayPal", "Debit Card"]),
-      status: pick(pickRandom(["PENDING", "COMPLETED", "SHIPPED", "DELIVERED"]), "UNKNOWN_STATUS", "")
+  // 5. File Handling
+  if (schema === "file_upload") {
+    const base = {
+      fileName: getVal(getPool("fileNames"), "no-ext", "A".repeat(255)),
+      fileSize: getVal(1024, "large", -1)
     };
+    return getComplex(base, { uploadMetadata: base, type: "application/pdf" }, { fileSubmission: { metadata: base, content: { base64: "JVBERi0..." } } });
+  }
+  if (schema === "file_download") {
+    const base = {
+      fileId: getVal("F100", "NaN", null),
+      expiry: getVal(3600, "soon", -10)
+    };
+    return getComplex(base, { downloadRequest: base }, { downloadLink: { params: base, url: "https://dl.example.com/F100" } });
+  }
+  if (schema === "file_csv") {
+    const base = {
+      csvData: getVal("id,name\n1,Arun", 123, null),
+      rows: getVal(2, "two", -1)
+    };
+    return getComplex(base, { csvPayload: base }, { spreadsheetImport: { data: base, mapping: { col1: "id" } } });
+  }
+  if (schema === "file_large") {
+    const base = {
+      payloadChunk: getVal("A".repeat(100), 123, null),
+      chunkId: getVal(1, "one", -1)
+    };
+    return getComplex(base, { largeData: base, totalChunks: 10 }, { multipartUpload: { chunk: base, checksum: "hash" } });
+  }
+  if (schema === "file_invalid") {
+    const base = {
+      fileType: getVal("application/exe", 123, null),
+      virusScan: getVal("Failed", true, null)
+    };
+    return getComplex(base, { rejectedFile: base }, { securityEvent: { fileInfo: base, action: "Quarantine" } });
   }
 
-  if (schema === "pagination") {
-    return {
-      page: pick(pickRandom([1, 2, 3, 4, 5]), -1, 999999),
-      limit: pick(pickRandom([10, 20, 50, 100]), 0, 1000),
-      sortBy: pickRandom(["createdAt", "updatedAt", "name", "price"]),
-      order: pick(pickRandom(["asc", "desc"]), "invalid", "")
+  // 6. Edge Cases
+  if (schema === "edge_null") {
+    const base = {
+      fieldA: null,
+      fieldB: null
     };
+    return getComplex(base, { nullData: base }, { emptyPayload: { data: base, valid: false } });
+  }
+  if (schema === "edge_max") {
+    const base = {
+      hugeString: getVal("A".repeat(500), 123, null),
+      hugeNumber: getVal(999999999999, "NaN", null)
+    };
+    return getComplex(base, { maxBounds: base }, { overflowTest: { values: base } });
+  }
+  if (schema === "edge_special") {
+    const base = {
+      symbols: getVal("!@#$%^&*()_+{}|:<>?", 123, null),
+      emoji: getVal("😀🚀🔥", "smile", null)
+    };
+    return getComplex(base, { charTest: base }, { encodingPayload: { chars: base, format: "UTF-8" } });
+  }
+  if (schema === "edge_duplicate") {
+    const base = {
+      id: getVal(100, "NaN", null),
+      ID: getVal(200, "NaN", null)
+    };
+    return getComplex(base, { dupKeys: base }, { conflictTest: { fields: base, resolver: "overwrite" } });
+  }
+  if (schema === "edge_random") {
+    const base = {
+      rand1: getVal(Math.random(), "NaN", null),
+      rand2: getVal(getPool("names"), 123, null)
+    };
+    return getComplex(base, { chaosData: base }, { entropyTest: { randomVals: base } });
   }
 
-  if (schema === "search") {
-    return {
-      query: pick(pickRandom(products).toLowerCase(), "", "a"),
-      filters: {
-        priceMin: pick(pickRandom([0, 100, 500]), -100, 0),
-        priceMax: pick(pickRandom([1000, 5000, 10000]), -1, 999999999),
-        brand: pickRandom([["Dell", "HP"], ["Apple", "Samsung"], ["Sony", "LG"]])
-      }
-    };
-  }
-
-  if (schema === "file") {
-    return {
-      fileName: pick(`data_${rand(4)}.xlsx`, "data.exe", ""),
-      fileSize: pick(pickRandom([1024, 20480, 1024000, 5000000]), 9999999999, 0),
-      fileType: pick(
-        pickRandom(["application/json", "text/csv", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]),
-        "application/unknown",
-        ""
-      )
-    };
-  }
-
-  if (schema === "headers") {
-    return {
-      Authorization: pick(
-        "Bearer " + rand(20),
-        "",
-        "Bearer"
-      ),
-      "Content-Type": pick(pickRandom(["application/json", "text/plain", "application/xml"]), "", "")
-    };
-  }
-
-  return { message: "Unknown schema selected" };
+  // Fallback for custom logic based on old schemas
+  return {
+    id: getVal(getPool("ids"), "invalid-id", null),
+    name: getVal(getPool("names"), "1234", ""),
+    email: getVal(getPool("emails"), "wrong-format", null)
+  };
 }
 
 function generateCustomFromSchema(schema) {
@@ -412,7 +493,7 @@ function generateCustomFromSchema(schema) {
     if (type === 'date') return new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString();
     return schema; // default fallback if unrecognized
   }
-  
+
   if (Array.isArray(schema)) {
     const result = [];
     if (schema.length > 0) {
@@ -423,7 +504,7 @@ function generateCustomFromSchema(schema) {
     }
     return result;
   }
-  
+
   if (typeof schema === 'object' && schema !== null) {
     const result = {};
     for (const key in schema) {
@@ -431,7 +512,7 @@ function generateCustomFromSchema(schema) {
     }
     return result;
   }
-  
+
   return schema;
 }
 
@@ -490,13 +571,13 @@ function generate() {
   for (let i = 0; i < count; i++) {
     if (baseType === "email") result.push(generateEmail(subType, userLen));
     else if (baseType === "phone") result.push(generatePhone(subType));
-    else if (baseType === "json") result.push(generateJSON(subType, userLen));
+    else if (baseType === "json") result.push(generateJSON(subType, userLen, i));
     else if (baseType === "custom") result.push(generateCustomFromSchema(parsedSchema));
   }
 
   document.getElementById("output").textContent =
     (baseType === "json" || baseType === "custom") ? JSON.stringify(result, null, 2) : result.join("\n");
-  
+
   const downloadBtn = document.getElementById("downloadBtn");
   if (downloadBtn) {
     downloadBtn.disabled = false;
@@ -511,7 +592,7 @@ function toggleDownloadMenu() {
   }
 }
 
-document.addEventListener("click", function(event) {
+document.addEventListener("click", function (event) {
   const menu = document.getElementById("downloadMenu");
   const downloadBtn = event.target.closest('button[onclick="toggleDownloadMenu()"]');
   if (menu && menu.style.display === "block" && !downloadBtn) {
@@ -522,7 +603,7 @@ document.addEventListener("click", function(event) {
 function downloadFile(format) {
   const outputText = document.getElementById("output").textContent;
   if (!outputText) return;
-  
+
   let content = outputText;
   let type = "text/plain";
   let extension = "txt";
@@ -533,45 +614,45 @@ function downloadFile(format) {
   } else if (format === 'csv') {
     type = "text/csv";
     extension = "csv";
-    
+
     try {
       const data = JSON.parse(outputText);
       if (Array.isArray(data) && data.length > 0) {
         const headers = new Set();
         data.forEach(item => {
-           if(typeof item === 'object' && item !== null) {
-             Object.keys(item).forEach(k => headers.add(k));
-           }
+          if (typeof item === 'object' && item !== null) {
+            Object.keys(item).forEach(k => headers.add(k));
+          }
         });
         const headerArr = Array.from(headers);
-        
+
         let csv = headerArr.join(",") + "\n";
         data.forEach(item => {
-           if(typeof item === 'object' && item !== null) {
-             const row = headerArr.map(header => {
-                let val = item[header];
-                if (typeof val === 'object') val = JSON.stringify(val);
-                if (val === null || val === undefined) val = "";
-                val = String(val).replace(/"/g, '""');
-                if (val.includes(",") || val.includes("\n") || val.includes('"')) {
-                  val = `"${val}"`;
-                }
-                return val;
-             });
-             csv += row.join(",") + "\n";
-           } else {
-             csv += item + "\n";
-           }
+          if (typeof item === 'object' && item !== null) {
+            const row = headerArr.map(header => {
+              let val = item[header];
+              if (typeof val === 'object') val = JSON.stringify(val);
+              if (val === null || val === undefined) val = "";
+              val = String(val).replace(/"/g, '""');
+              if (val.includes(",") || val.includes("\n") || val.includes('"')) {
+                val = `"${val}"`;
+              }
+              return val;
+            });
+            csv += row.join(",") + "\n";
+          } else {
+            csv += item + "\n";
+          }
         });
         content = csv;
       } else if (Array.isArray(data)) {
         content = data.join("\n");
       }
-    } catch(e) {
+    } catch (e) {
       content = outputText.split("\n").map(line => {
         let val = line.replace(/"/g, '""');
         if (val.includes(",") || val.includes("\n") || val.includes('"')) {
-           return `"${val}"`;
+          return `"${val}"`;
         }
         return val;
       }).join("\n");
@@ -582,10 +663,10 @@ function downloadFile(format) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  
+
   const now = new Date();
   const timestamp = now.toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  
+
   a.download = `test-data-${timestamp}.${extension}`;
   document.body.appendChild(a);
   a.click();
@@ -610,7 +691,7 @@ function copyOutput(btn) {
 function clearOutput() {
   // Target the pre tag and empty its content
   document.getElementById("output").textContent = "";
-  
+
   const downloadBtn = document.getElementById("downloadBtn");
   if (downloadBtn) {
     downloadBtn.disabled = true;
