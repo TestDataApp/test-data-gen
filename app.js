@@ -107,8 +107,42 @@ const structure = {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+  initTheme();
   initDropdowns();
 });
+
+function initTheme() {
+  const savedTheme = localStorage.getItem("theme");
+  const systemPrefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  
+  if (savedTheme === "dark" || (!savedTheme && systemPrefersDark)) {
+    document.documentElement.setAttribute("data-theme", "dark");
+    updateThemeToggleUI("dark");
+  } else {
+    document.documentElement.setAttribute("data-theme", "light");
+    updateThemeToggleUI("light");
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute("data-theme");
+  const newTheme = currentTheme === "dark" ? "light" : "dark";
+  
+  document.documentElement.setAttribute("data-theme", newTheme);
+  localStorage.setItem("theme", newTheme);
+  updateThemeToggleUI(newTheme);
+}
+
+function updateThemeToggleUI(theme) {
+  const toggleBtn = document.getElementById("themeToggle");
+  if (toggleBtn) {
+    if (theme === "dark") {
+      toggleBtn.innerHTML = "☀️";
+    } else {
+      toggleBtn.innerHTML = "🌙";
+    }
+  }
+}
 
 function initDropdowns() {
   const mainTypeSelect = document.getElementById("mainType");
