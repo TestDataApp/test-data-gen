@@ -1,172 +1,180 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TestDataGen</title>
+  <title>MockData Builder v2.0 | Premium Test Data Generator</title>
+  <meta name="description" content="Generate high-quality, realistic test data instantly. Support for JSON, CSV, and SQL formats." />
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-
-    gtag('js', new Date());
-    gtag('config', 'G-JFE7XL3TNK');
-  </script>
-
-  <!-- Prevent Flash of Light Theme -->
+  
+  <!-- Pre-load theme script -->
   <script>
     (function() {
       try {
-        var savedTheme = localStorage.getItem("theme");
-        var systemPrefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-        if (savedTheme === "dark" || (!savedTheme && systemPrefersDark)) {
-          document.documentElement.setAttribute("data-theme", "dark");
-        } else {
-          document.documentElement.setAttribute("data-theme", "light");
-        }
+        var savedTheme = localStorage.getItem("theme") || "light";
+        document.documentElement.setAttribute("data-theme", savedTheme);
       } catch (e) {}
     })();
   </script>
 </head>
-
 <body>
 
   <div class="container">
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle Dark Mode">🌙</button>
-    <h1>⚙️ MockData Builder</h1>
-    <p>Generate QA-friendly test data instantly</p>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle Theme">🌙</button>
+    
+    <header>
+      <h1>⚙️ MockData Builder</h1>
+      <p>The premium utility for high-fidelity test data generation</p>
+    </header>
 
-    <div class="controls-top">
-      <div>
-        <label>Data Category</label>
-        <select id="mainType" onchange="handleMainTypeChange()"></select>
-      </div>
+    <main>
+      <!-- Configuration Grid -->
+      <section class="config-section">
+        <div class="input-group">
+          <label for="mainType">Data Category</label>
+          <select id="mainType" onchange="handleMainTypeChange()"></select>
+        </div>
 
-      <div>
-        <label>Sub Category</label>
-        <select id="subCategory" onchange="handleSubCategoryChange()"></select>
-      </div>
+        <div class="input-group">
+          <label for="subCategory">Sub Category</label>
+          <select id="subCategory" onchange="handleSubCategoryChange()"></select>
+        </div>
 
-      <div>
-        <label>Format</label>
-        <select id="type" onchange="handleTypeChange()" onkeydown="if(event.key === 'Enter') generate()"></select>
-      </div>
+        <div class="input-group">
+          <label for="type">Format / Preset</label>
+          <select id="type" onchange="handleTypeChange()" onkeydown="if(event.key === 'Enter') generate()"></select>
+        </div>
 
-      <div>
-        <label>Test Type</label>
-        <select id="testType">
-          <option value="Valid">Valid</option>
-          <option value="Invalid">Invalid</option>
-          <option value="Edge">Edge</option>
-        </select>
-      </div>
+        <div class="input-group">
+          <label for="testType">Test Integrity</label>
+          <select id="testType">
+            <option value="Valid">✅ Valid Data</option>
+            <option value="Invalid">❌ Invalid Data</option>
+            <option value="Edge">⚠️ Edge Cases</option>
+          </select>
+        </div>
 
-      <div>
-        <label>Complexity</label>
-        <select id="complexity">
-          <option value="Simple">Simple</option>
-          <option value="Medium">Medium</option>
-          <option value="Complex">Complex</option>
-        </select>
-      </div>
-    </div>
+        <div class="input-group">
+          <label for="complexity">Complexity Level</label>
+          <select id="complexity">
+            <option value="Simple">Basic</option>
+            <option value="Medium">Standard</option>
+            <option value="Complex">Enterprise</option>
+          </select>
+        </div>
 
-    <div class="controls-bottom">
-      <div style="position: relative;">
-        <label>Count</label>
-        <input type="number" id="count" value="5" min="1" max="10000" ondblclick="this.select()"
-          onkeydown="if(event.key === 'Enter') generate()" />
-        <span id="countError" class="error-msg"></span>
-      </div>
+        <div class="input-group">
+          <label for="count">Batch Count</label>
+          <input type="number" id="count" value="5" min="1" max="10000" />
+          <span id="countError" class="error-msg"></span>
+        </div>
 
-      <div style="position: relative;">
-        <label id="lengthLabel">Email Prefix (Length)</label>
-        <input type="number" id="strLength" value="8" min="3" max="100" ondblclick="this.select()"
-          onkeydown="if(event.key === 'Enter') generate()" />
-        <span id="lengthError" class="error-msg"></span>
-      </div>
+        <div class="input-group" id="lengthGroup">
+          <label id="lengthLabel" for="strLength">Prefix Length</label>
+          <input type="number" id="strLength" value="8" min="3" max="100" />
+          <span id="lengthError" class="error-msg"></span>
+        </div>
+      </section>
 
-      <button class="secondary-btn" onclick="generate()">✨ Generate</button>
-    </div>
-    <div id="customSchemaContainer" style="display: none; margin-top: 15px;">
-      <label style="display: flex; justify-content: space-between;">
-        Custom JSON Schema
-        <span id="schemaError" class="error-msg" style="position: static; color: var(--error-color, #ef4444);"></span>
-      </label>
-      <textarea id="customSchemaInput" rows="12"
-        style="width: 100%; box-sizing: border-box; font-family: monospace; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--input-text); resize: vertical;">{
+      <!-- Custom Schema Area (Conditional) -->
+      <section id="customSchemaContainer" style="display: none; margin-bottom: 30px;">
+        <div class="input-group">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label for="customSchemaInput">Custom JSON Schema</label>
+            <div style="display: flex; gap: 8px;">
+               <button class="icon-btn" onclick="saveCurrentSchema()" title="Save Schema">💾</button>
+               <select id="savedSchemas" style="padding: 4px 8px; font-size: 0.75rem; width: auto; height: auto;" onchange="loadSavedSchema()">
+                 <option value="">Saved Schemas...</option>
+               </select>
+            </div>
+          </div>
+          <textarea id="customSchemaInput" rows="10" spellcheck="false">{
   "user": {
-    "name": "string",
+    "id": "uuid",
+    "name": "full_name",
     "email": "email",
-    "orders": [
-      {
-        "id": "number",
-        "amount": "number"
-      }
-    ]
+    "address": "address"
   }
 }</textarea>
-    </div>
-
-    <div class="output-header">
-      <h3>Generated Output</h3>
-      <div style="position: relative;">
-        <button id="downloadBtn" class="action-btn" onclick="toggleDownloadMenu()"
-          style="font-size: 15px; padding: 8px 12px;" disabled>📥 Download ▾</button>
-        <div id="downloadMenu"
-          style="display: none; position: absolute; top: 100%; right: 0; margin-top: 5px; background: var(--menu-bg); min-width: 120px; box-shadow: 0 4px 6px var(--shadow-color); border-radius: 8px; border: 1px solid var(--border-color); z-index: 10; overflow: hidden;">
-          <div onclick="downloadFile('json'); toggleDownloadMenu()"
-            style="padding: 10px 15px; cursor: pointer; text-align: left; font-size: 14px; font-weight: 600; color: var(--menu-text);"
-            onmouseover="this.style.background='var(--menu-hover)'" onmouseout="this.style.background='transparent'">📄 JSON</div>
-          <div onclick="downloadFile('csv'); toggleDownloadMenu()"
-            style="padding: 10px 15px; cursor: pointer; text-align: left; font-size: 14px; font-weight: 600; border-top: 1px solid var(--border-color); color: var(--menu-text);"
-            onmouseover="this.style.background='var(--menu-hover)'" onmouseout="this.style.background='transparent'">📊 CSV</div>
+          <span id="schemaError" class="error-msg"></span>
         </div>
-      </div>
-    </div>
-    <pre id="output"></pre>
-    <div class="output-actions">
-      <button class="action-btn" onclick="copyOutput(this)">📋 Copy</button>
-      <button class="action-btn" onclick="clearOutput()">🗑️ Clear</button>
-    </div>
+      </section>
 
-    <hr />
-
-
-    <!-- Collapsible Feedback -->
-    <details class="feedback">
-      <summary><b>Feedback</b> (optional)</summary>
-
-      <p class="note">
-        You can submit feedback anonymously. If you'd like a response, provide your email.
-      </p>
-
-      <label class="checkbox">
-        <input type="checkbox" id="anonymous" checked onchange="toggleIdentity()" />
-        Submit anonymously
-      </label>
-
-      <div id="identityFields" class="row" style="display:none;">
-        <input id="name" placeholder="Your Name (optional)" />
-        <input id="email" placeholder="Your Email (optional)" />
+      <!-- Action Buttons -->
+      <div class="button-container">
+        <button class="btn btn-primary" onclick="generate()">
+          <span>✨</span> Generate Data
+        </button>
+        <button class="btn btn-secondary" onclick="clearOutput()">
+          <span>🗑️</span> Reset
+        </button>
       </div>
 
-      <textarea id="message" placeholder="Your feedback"></textarea>
+      <!-- Output Display -->
+      <section class="output-container" id="outputSection" style="display: none;">
+        <div class="output-tabs">
+          <div class="tab active" onclick="switchTab('json')" id="tab-json">JSON</div>
+          <div class="tab" onclick="switchTab('table')" id="tab-table">Table View</div>
+          <div class="tab" onclick="switchTab('sql')" id="tab-sql">SQL Insert</div>
+        </div>
 
-      <button class="primary-btn" onclick="submitFeedback()">Send Feedback</button>
-    </details>
+        <div class="output-header">
+          <h3>Generated Result</h3>
+          <div class="output-actions">
+            <button class="icon-btn" onclick="copyOutput(this)" title="Copy to Clipboard">📋</button>
+            <div style="position: relative;">
+              <button id="downloadBtn" class="icon-btn" onclick="toggleDownloadMenu()" title="Download Data">📥</button>
+              <div id="downloadMenu" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; overflow: hidden; z-index: 100; min-width: 140px; box-shadow: var(--card-shadow); backdrop-filter: blur(10px);">
+                <div onclick="downloadFile('json')" style="padding: 12px 16px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='var(--primary)'" onmouseout="this.style.background='transparent'">📄 JSON Format</div>
+                <div onclick="downloadFile('csv')" style="padding: 12px 16px; cursor: pointer; border-top: 1px solid var(--glass-border); transition: background 0.2s;" onmouseover="this.style.background='var(--primary)'" onmouseout="this.style.background='transparent'">📊 CSV / Excel</div>
+                <div onclick="downloadFile('sql')" style="padding: 12px 16px; cursor: pointer; border-top: 1px solid var(--glass-border); transition: background 0.2s;" onmouseover="this.style.background='var(--primary)'" onmouseout="this.style.background='transparent'">💾 SQL Script</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
+        <div id="jsonView">
+          <pre id="output"></pre>
+        </div>
+        
+        <div id="tableView" style="display: none;" class="table-wrapper">
+          <table id="dataTable">
+            <thead><tr id="tableHeader"></tr></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+
+        <div id="sqlView" style="display: none;">
+          <pre id="sqlOutput"></pre>
+        </div>
+      </section>
+
+      <!-- Feedback -->
+      <details class="feedback-details">
+        <summary>Help & Feedback</summary>
+        <div class="feedback-content">
+          <p style="font-size: 0.9rem; margin-bottom: 10px;">Encountered an issue or have a suggestion? Let us know!</p>
+          
+          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 5px;">
+            <input type="checkbox" id="anonymous" checked onchange="toggleIdentity()" style="width: auto; margin: 0;" />
+            <label for="anonymous" style="margin: 0; font-size: 0.85rem;">Submit anonymously</label>
+          </div>
+
+          <div id="identityFields" style="display: none; gap: 12px; margin-bottom: 12px;">
+            <input type="text" id="name" placeholder="Your Name" />
+            <input type="email" id="email" placeholder="Your Email" />
+          </div>
+
+          <textarea id="message" placeholder="Describe your experience or feature request..." style="resize: vertical; min-height: 80px;"></textarea>
+          
+          <button class="btn btn-primary" onclick="submitFeedback()" style="margin-top: 5px;">
+            Send Feedback
+          </button>
+        </div>
+      </details>
+    </main>
   </div>
 
   <script src="app.js"></script>
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
 </body>
-
 </html>
